@@ -75,13 +75,14 @@ export default function ManageChores({
     setEditedChore((prev) => ({ ...prev, [field]: value }));
   };
 
-  const filteredChores = chores.filter((chore) =>
-    selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
+  const filteredChores = chores.filter(
+    (chore) =>
+      selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
   );
 
   return (
-    <Box>
-      <Typography variant="h6" sx={{ marginBottom: 2 }}>
+    <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+      <Typography variant="h5" sx={{ marginBottom: 2 }}>
         Manage Chores
       </Typography>
 
@@ -163,7 +164,10 @@ export default function ManageChores({
               return (
                 <TableRow
                   key={chore.id}
-                  sx={{ height: isEditing ? '80px' : 'auto', backgroundColor: userColor }}
+                  sx={{
+                    height: isEditing ? '80px' : 'auto',
+                    backgroundColor: userColor,
+                  }}
                 >
                   <TableCell>
                     {isEditing ? (

@@ -10,6 +10,7 @@ import {
   TableRow,
   Paper,
   Checkbox,
+  Box,
 } from '@mui/material';
 
 function isChoreDue(chore, dateObj) {
@@ -35,8 +36,8 @@ export default function DailyView({
   );
 
   return (
-    <div>
-      <Typography variant="h6" sx={{ marginBottom: 2 }}>
+    <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+      <Typography variant="h5" sx={{ marginBottom: 2 }}>
         Today's Chores ({todayString})
       </Typography>
 
@@ -93,6 +94,6 @@ export default function DailyView({
           </Table>
         </TableContainer>
       )}
-    </div>
+    </Box>
   );
 }

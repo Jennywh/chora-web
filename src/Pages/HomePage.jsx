@@ -266,13 +266,19 @@ export default function HomePage() {
       </AppBar>
 
       <Container maxWidth="md" sx={{ marginY: 3 }}>
-        <Typography variant="h5" gutterBottom>
-          Hello, {displayName}
-        </Typography>
         {!joinedGroup ? (
           <>
-            <Box sx={{ marginBottom: 2 }}>
-              <Typography variant="h6">Join an Existing Group</Typography>
+            <Box
+              sx={{
+                marginBottom: 2,
+                padding: 2,
+                backgroundColor: '#f5f5f5',
+                borderRadius: 1,
+              }}
+            >
+              <Typography variant="h5" gutterBottom>
+                Join an Existing Group
+              </Typography>
               <TextField
                 label="Enter Group ID"
                 variant="outlined"
@@ -285,8 +291,17 @@ export default function HomePage() {
                 Join Group
               </Button>
             </Box>
-            <Box sx={{ marginBottom: 2 }}>
-              <Typography variant="h6">Create a New Group</Typography>
+            <Box
+              sx={{
+                marginBottom: 2,
+                padding: 2,
+                backgroundColor: '#f5f5f5',
+                borderRadius: 1,
+              }}
+            >
+              <Typography variant="h5" gutterBottom>
+                Create a New Group
+              </Typography>
               <TextField
                 label="New Group Name"
                 variant="outlined"

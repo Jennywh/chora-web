@@ -10,6 +10,7 @@ import {
   TableCell,
   TableContainer,
   Paper,
+  Box,
 } from '@mui/material';
 
 function isChoreDue(chore, dateObj) {
@@ -24,8 +25,8 @@ export default function WeeklySchedule({ chores, groupMembers, selectedMembers }
   );
 
   return (
-    <div>
-      <Typography variant="h6" sx={{ marginBottom: 2 }}>
+    <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+      <Typography variant="h5" sx={{ marginBottom: 2 }}>
         Weekly Schedule
       </Typography>
       <TableContainer component={Paper}>
@@ -78,6 +79,6 @@ export default function WeeklySchedule({ chores, groupMembers, selectedMembers }
           </TableBody>
         </Table>
       </TableContainer>
-    </div>
+    </Box>
   );
 }
