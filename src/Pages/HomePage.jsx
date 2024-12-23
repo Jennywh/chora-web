@@ -395,6 +395,7 @@ export default function HomePage() {
                 onEditChore={handleEditChore}
                 onDeleteChore={handleDeleteChore}
                 currentUser={currentUser}
+                currentUserName={userData.username || userData.email}
                 selectedMembers={selectedMembers}
               />
             )}

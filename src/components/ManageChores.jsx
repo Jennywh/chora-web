@@ -27,6 +27,7 @@ export default function ManageChores({
   onEditChore,
   onDeleteChore,
   currentUser,
+  currentUserName,
   selectedMembers,
 }) {
   const [choreTitle, setChoreTitle] = useState('');
@@ -79,7 +80,8 @@ export default function ManageChores({
   const filteredChores = chores
     .filter(
       (chore) =>
-        selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
+        selectedMembers.length === 0 ||
+        selectedMembers.includes(chore.assignedTo)
     )
     .sort((a, b) => new Date(b.addedTime) - new Date(a.addedTime)); // Sort by addedTime in descending order
 
@@ -109,17 +111,19 @@ export default function ManageChores({
           <InputLabel>Assign To</InputLabel>
           <Select
             label="Assign To"
-            value={assignedUid}
+            value={assignedUid || currentUser.uid}
             onChange={(e) => setAssignedUid(e.target.value)}
           >
-            <MenuItem value="">
-              <em>Assign to yourself</em>
+            <MenuItem value={currentUser.uid}>
+              {currentUserName || currentUser.email} (yourself)
             </MenuItem>
-            {groupMembers.map((m) => (
-              <MenuItem key={m.uid} value={m.uid}>
-                {m.username || m.email}
-              </MenuItem>
-            ))}
+            {groupMembers
+              .filter((m) => m.uid !== currentUser.uid)
+              .map((m) => (
+                <MenuItem key={m.uid} value={m.uid}>
+                  {m.username || m.email}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
 
@@ -194,19 +198,22 @@ export default function ManageChores({
                     {isEditing ? (
                       <FormControl size="small">
                         <Select
-                          value={editedChore.assignedTo || ''}
+                          value={editedChore.assignedTo || currentUser.uid}
                           onChange={(e) =>
                             handleChange('assignedTo', e.target.value)
                           }
                         >
-                          <MenuItem value="">
-                            <em>Assign to yourself</em>
+                          <MenuItem value={currentUser.uid}>
+                            {currentUser.username || currentUser.email}{' '}
+                            (yourself)
                           </MenuItem>
-                          {groupMembers.map((m) => (
-                            <MenuItem key={m.uid} value={m.uid}>
-                              {m.username || m.email}
-                            </MenuItem>
-                          ))}
+                          {groupMembers
+                            .filter((m) => m.uid !== currentUser.uid)
+                            .map((m) => (
+                              <MenuItem key={m.uid} value={m.uid}>
+                                {m.username || m.email}
+                              </MenuItem>
+                            ))}
                         </Select>
                       </FormControl>
                     ) : assignedUser ? (
