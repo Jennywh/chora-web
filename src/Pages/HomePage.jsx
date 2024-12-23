@@ -23,9 +23,7 @@ import {
   Container,
   Box,
   TextField,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
+  Chip,
 } from '@mui/material';
 
 import GroupInfo from '../components/GroupInfo';
@@ -259,7 +257,7 @@ export default function HomePage() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            My Chore App
+            Chora
           </Typography>
           <Button color="inherit" onClick={handleSignOut}>
             Sign Out
@@ -274,21 +272,6 @@ export default function HomePage() {
         {!joinedGroup ? (
           <>
             <Box sx={{ marginBottom: 2 }}>
-              <Typography variant="h6">Create a New Group</Typography>
-              <TextField
-                label="New Group Name"
-                variant="outlined"
-                size="small"
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
-                sx={{ marginRight: 1 }}
-              />
-              <Button variant="contained" onClick={handleCreateGroup}>
-                Create Group
-              </Button>
-            </Box>
-
-            <Box sx={{ marginBottom: 2 }}>
               <Typography variant="h6">Join an Existing Group</Typography>
               <TextField
                 label="Enter Group ID"
@@ -302,6 +285,20 @@ export default function HomePage() {
                 Join Group
               </Button>
             </Box>
+            <Box sx={{ marginBottom: 2 }}>
+              <Typography variant="h6">Create a New Group</Typography>
+              <TextField
+                label="New Group Name"
+                variant="outlined"
+                size="small"
+                value={groupName}
+                onChange={(e) => setGroupName(e.target.value)}
+                sx={{ marginRight: 1 }}
+              />
+              <Button variant="contained" onClick={handleCreateGroup}>
+                Create Group
+              </Button>
+            </Box>
           </>
         ) : (
           <>
@@ -309,20 +306,19 @@ export default function HomePage() {
             <GroupInfo group={joinedGroup} members={groupMembers} />
 
             {/* Member Filter */}
-            <FormGroup row>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginY: 2 }}>
               {groupMembers.map((member) => (
-                <FormControlLabel
+                <Chip
                   key={member.uid}
-                  control={
-                    <Checkbox
-                      checked={selectedMembers.includes(member.uid)}
-                      onChange={() => handleMemberFilterChange(member.uid)}
-                    />
-                  }
                   label={member.username || member.email}
+                  onClick={() => handleMemberFilterChange(member.uid)}
+                  color={
+                    selectedMembers.includes(member.uid) ? 'primary' : 'default'
+                  }
+                  sx={{ backgroundColor: member.color }}
                 />
               ))}
-            </FormGroup>
+            </Box>
 
             {/* View Toggles */}
             <Box sx={{ marginY: 2 }}>
