@@ -31,10 +31,12 @@ export default function DailyView({
   const todayString = today.format('YYYY-MM-DD');
 
   const choresDueToday = chores.filter((c) => isChoreDue(c, today));
-  const filteredChores = choresDueToday.filter(
-    (chore) =>
-      selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
-  );
+  const filteredChores = choresDueToday
+    .filter(
+      (chore) =>
+        selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
+    )
+    .sort((a, b) => dayjs(b.addedTime).diff(dayjs(a.addedTime))); // Sort by addedTime
 
   return (
     <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>

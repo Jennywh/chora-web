@@ -20,9 +20,11 @@ function isChoreDue(chore, dateObj) {
 }
 
 export default function WeeklySchedule({ chores, groupMembers, selectedMembers }) {
-  const filteredChores = chores.filter((chore) =>
-    selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
-  );
+  const filteredChores = chores
+    .filter((chore) =>
+      selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
+    )
+    .sort((a, b) => dayjs(b.addedTime).diff(dayjs(a.addedTime)));
 
   return (
     <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>

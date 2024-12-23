@@ -185,7 +185,7 @@ export default function HomePage() {
   }
 
   // Add a new chore
-  async function handleAddChore({ title, frequency, startDate, assignedTo }) {
+  async function handleAddChore({ title, frequency, startDate, assignedTo, addedTime }) {
     if (!title.trim() || !joinedGroup) return;
     try {
       const choresRef = collection(db, 'groups', joinedGroup.id, 'chores');
@@ -194,6 +194,7 @@ export default function HomePage() {
         frequency,
         startDate,
         assignedTo: assignedTo || currentUser.uid,
+        addedTime: new Date().toISOString(),
       });
       await fetchChores(joinedGroup.id);
     } catch (err) {

@@ -46,6 +46,7 @@ export default function ManageChores({
       frequency: Number(choreFrequency),
       startDate: choreStartDate,
       assignedTo: assignedUid || currentUser.uid,
+      addedTime: new Date().toISOString(), // Add timestamp
     });
 
     // Reset form
@@ -75,10 +76,12 @@ export default function ManageChores({
     setEditedChore((prev) => ({ ...prev, [field]: value }));
   };
 
-  const filteredChores = chores.filter(
-    (chore) =>
-      selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
-  );
+  const filteredChores = chores
+    .filter(
+      (chore) =>
+        selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
+    )
+    .sort((a, b) => new Date(b.addedTime) - new Date(a.addedTime)); // Sort by addedTime in descending order
 
   return (
     <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
