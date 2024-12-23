@@ -25,6 +25,7 @@ export default function DailyView({
   dailyCompletions,
   onToggleDailyCompletion,
   selectedMembers,
+  currentUser, // Add currentUser prop
 }) {
   const today = dayjs();
   const todayString = today.format('YYYY-MM-DD');
@@ -66,6 +67,7 @@ export default function DailyView({
                   (m) => m.uid === chore.assignedTo
                 );
                 const userColor = assignedUser ? assignedUser.color : 'inherit';
+                const isAssignedUser = assignedUser && assignedUser.uid === currentUser.uid;
 
                 return (
                   <TableRow key={chore.id} sx={{ backgroundColor: userColor }}>
@@ -85,6 +87,7 @@ export default function DailyView({
                             e.target.checked
                           )
                         }
+                        disabled={!isAssignedUser} // Disable if not assigned user
                       />
                     </TableCell>
                   </TableRow>

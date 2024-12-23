@@ -411,6 +411,7 @@ export default function HomePage() {
                 dailyCompletions={dailyCompletions}
                 onToggleDailyCompletion={handleToggleDailyCompletion}
                 selectedMembers={selectedMembers}
+                currentUser={currentUser}
               />
             )}
           </>
