@@ -25,12 +25,14 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
 
   const handleToggle = (event, newMode) => {
     setMode(newMode);
     setEmail('');
     setPassword('');
     setUsername('');
+    setError('');
   };
 
   async function handleSignUp(e) {
@@ -54,6 +56,7 @@ export default function LoginPage() {
       navigate('/home');
     } catch (error) {
       console.error('Sign up error:', error.message);
+      setError(`Sign up error: ${error.message}`);
     }
   }
 
@@ -64,6 +67,7 @@ export default function LoginPage() {
       navigate('/home');
     } catch (error) {
       console.error('Sign in error:', error.message);
+      setError(`Sign in error: ${error.message}`);
     }
   }
 
@@ -71,7 +75,7 @@ export default function LoginPage() {
     <Container maxWidth="xs" sx={{ marginTop: 8 }}>
       <Paper elevation={3} sx={{ padding: 3 }}>
         <Typography variant="h5" align="center" gutterBottom>
-          Welcome! Please {mode === 'login' ? 'Sign In' : 'Sign Up'}
+          Welcome to Chora!
         </Typography>
 
         {/* Tabs for Toggle */}
@@ -92,6 +96,16 @@ export default function LoginPage() {
           sx={{ marginTop: 2 }}
         >
           {/* Username Field for Sign Up */}
+          <TextField
+            fullWidth
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            margin="normal"
+            required
+          />
+
           {mode === 'signup' && (
             <TextField
               fullWidth
@@ -105,15 +119,6 @@ export default function LoginPage() {
 
           <TextField
             fullWidth
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            margin="normal"
-            required
-          />
-          <TextField
-            fullWidth
             label="Password"
             type="password"
             value={password}
@@ -121,6 +126,16 @@ export default function LoginPage() {
             margin="normal"
             required
           />
+          {error && (
+            <Typography
+              color="error"
+              variant="body2"
+              align="center"
+              sx={{ marginTop: 2 }}
+            >
+              {error}
+            </Typography>
+          )}
           <Button
             type="submit"
             fullWidth
