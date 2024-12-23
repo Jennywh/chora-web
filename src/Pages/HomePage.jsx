@@ -230,9 +230,7 @@ export default function HomePage() {
   }
 
   const handleMemberFilterChange = (uid) => {
-    setSelectedMembers((prev) =>
-      prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid]
-    );
+    setSelectedMembers((prev) => (prev.includes(uid) ? [] : [uid]));
   };
 
   function handleSignOut() {
@@ -321,7 +319,7 @@ export default function HomePage() {
               sx={{
                 marginBottom: 2,
                 padding: 2,
-                backgroundColor: '#FFEED6',
+                backgroundColor: '#E1F1D8',
                 borderRadius: 1,
               }}
             >
@@ -349,7 +347,11 @@ export default function HomePage() {
                         ? 'primary'
                         : 'default'
                     }
-                    sx={{ backgroundColor: member.color }}
+                    sx={{
+                      backgroundColor: selectedMembers.includes(member.uid)
+                        ? 'primary'
+                        : 'default',
+                    }}
                   />
                 ))}
               </Box>

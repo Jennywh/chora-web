@@ -87,7 +87,14 @@ export default function ManageChores({
       </Typography>
 
       {/* Add Chore Row */}
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', marginBottom: 2 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          flexWrap: 'wrap',
+          marginBottom: 2,
+        }}
+      >
         <TextField
           label="New Chore"
           value={choreTitle}
