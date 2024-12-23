@@ -26,7 +26,6 @@ import {
   Chip,
 } from '@mui/material';
 
-import GroupInfo from '../components/GroupInfo';
 import ManageChores from '../components/ManageChores';
 import WeeklySchedule from '../components/WeeklySchedule';
 import DailyView from '../components/DailyView';
@@ -318,22 +317,44 @@ export default function HomePage() {
         ) : (
           <>
             {/* Group Info */}
-            <GroupInfo group={joinedGroup} members={groupMembers} />
+            <Box
+              sx={{
+                marginBottom: 2,
+                padding: 2,
+                backgroundColor: '#FFEED6',
+                borderRadius: 1,
+              }}
+            >
+              <Typography variant="h5" component="span">
+                {joinedGroup.name}
+              </Typography>
+              <Typography
+                variant="body1"
+                component="span"
+                sx={{ marginLeft: 1 }}
+              >
+                (#{joinedGroup.id})
+              </Typography>
 
-            {/* Member Filter */}
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginY: 2 }}>
-              {groupMembers.map((member) => (
-                <Chip
-                  key={member.uid}
-                  label={member.username || member.email}
-                  onClick={() => handleMemberFilterChange(member.uid)}
-                  color={
-                    selectedMembers.includes(member.uid) ? 'primary' : 'default'
-                  }
-                  sx={{ backgroundColor: member.color }}
-                />
-              ))}
+              <Box
+                sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginY: 2 }}
+              >
+                {groupMembers.map((member) => (
+                  <Chip
+                    key={member.uid}
+                    label={member.username || member.email}
+                    onClick={() => handleMemberFilterChange(member.uid)}
+                    color={
+                      selectedMembers.includes(member.uid)
+                        ? 'primary'
+                        : 'default'
+                    }
+                    sx={{ backgroundColor: member.color }}
+                  />
+                ))}
+              </Box>
             </Box>
+            {/* Member Filter */}
 
             {/* View Toggles */}
             <Box sx={{ marginY: 2 }}>
@@ -341,6 +362,7 @@ export default function HomePage() {
                 variant={view === 'manage' ? 'contained' : 'outlined'}
                 onClick={() => setView('manage')}
                 sx={{ marginRight: 1 }}
+                size="small"
               >
                 Manage Chores
               </Button>
@@ -348,12 +370,14 @@ export default function HomePage() {
                 variant={view === 'daily' ? 'contained' : 'outlined'}
                 onClick={() => setView('daily')}
                 sx={{ marginRight: 1 }}
+                size="small"
               >
                 Daily View
               </Button>
               <Button
                 variant={view === 'schedule' ? 'contained' : 'outlined'}
                 onClick={() => setView('schedule')}
+                size="small"
               >
                 Weekly Schedule
               </Button>

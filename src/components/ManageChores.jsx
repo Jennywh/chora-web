@@ -89,7 +89,7 @@ export default function ManageChores({
       {/* Add Chore Row */}
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', marginBottom: 2 }}>
         <TextField
-          label="Chore Title"
+          label="New Chore"
           value={choreTitle}
           onChange={(e) => setChoreTitle(e.target.value)}
           size="small"
@@ -114,7 +114,7 @@ export default function ManageChores({
         </FormControl>
 
         <TextField
-          label="Frequency (Days)"
+          label="Repeats Every (Days)"
           type="number"
           value={choreFrequency}
           onChange={(e) => setChoreFrequency(e.target.value)}
