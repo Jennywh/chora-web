@@ -18,7 +18,7 @@ import {
   Box,
   IconButton,
 } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
+import { Edit, Delete, Save, Cancel } from '@mui/icons-material';
 
 export default function ManageChores({
   chores,
@@ -34,30 +34,18 @@ export default function ManageChores({
     dayjs().format('YYYY-MM-DD')
   );
   const [assignedUid, setAssignedUid] = useState('');
-  const [editMode, setEditMode] = useState(false);
   const [editingChoreId, setEditingChoreId] = useState(null);
+  const [editedChore, setEditedChore] = useState({});
 
   const handleAddChoreClick = () => {
     if (!choreTitle.trim()) return;
 
-    if (editMode) {
-      onEditChore({
-        id: editingChoreId,
-        title: choreTitle,
-        frequency: Number(choreFrequency),
-        startDate: choreStartDate,
-        assignedTo: assignedUid || currentUser.uid,
-      });
-      setEditMode(false);
-      setEditingChoreId(null);
-    } else {
-      onAddChore({
-        title: choreTitle,
-        frequency: Number(choreFrequency),
-        startDate: choreStartDate,
-        assignedTo: assignedUid || currentUser.uid,
-      });
-    }
+    onAddChore({
+      title: choreTitle,
+      frequency: Number(choreFrequency),
+      startDate: choreStartDate,
+      assignedTo: assignedUid || currentUser.uid,
+    });
 
     // Reset form
     setChoreTitle('');
@@ -67,12 +55,23 @@ export default function ManageChores({
   };
 
   const handleEditClick = (chore) => {
-    setChoreTitle(chore.title);
-    setChoreFrequency(chore.frequency);
-    setChoreStartDate(chore.startDate);
-    setAssignedUid(chore.assignedTo);
-    setEditMode(true);
     setEditingChoreId(chore.id);
+    setEditedChore({ ...chore });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingChoreId(null);
+    setEditedChore({});
+  };
+
+  const handleSaveClick = () => {
+    onEditChore(editedChore);
+    setEditingChoreId(null);
+    setEditedChore({});
+  };
+
+  const handleChange = (field, value) => {
+    setEditedChore((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -80,7 +79,9 @@ export default function ManageChores({
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
         Manage Chores
       </Typography>
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+
+      {/* Add Chore Row */}
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', marginBottom: 2 }}>
         <TextField
           label="Chore Title"
           value={choreTitle}
@@ -127,10 +128,10 @@ export default function ManageChores({
 
         <Button
           variant="contained"
-          color={editMode ? 'primary' : 'success'}
+          color="success"
           onClick={handleAddChoreClick}
         >
-          {editMode ? 'Save Changes' : 'Add'}
+          Add
         </Button>
       </Box>
 
@@ -150,29 +151,107 @@ export default function ManageChores({
               const assignedUser = groupMembers.find(
                 (m) => m.uid === chore.assignedTo
               );
+
+              const isEditing = editingChoreId === chore.id;
+
               return (
-                <TableRow key={chore.id}>
-                  <TableCell>{chore.title}</TableCell>
+                <TableRow
+                  key={chore.id}
+                  sx={{ height: isEditing ? '80px' : 'auto' }}
+                >
                   <TableCell>
-                    {assignedUser
-                      ? assignedUser.username || assignedUser.email
-                      : 'Unknown'}
+                    {isEditing ? (
+                      <TextField
+                        value={editedChore.title}
+                        onChange={(e) => handleChange('title', e.target.value)}
+                        size="small"
+                      />
+                    ) : (
+                      chore.title
+                    )}
                   </TableCell>
-                  <TableCell>{chore.frequency}</TableCell>
-                  <TableCell>{chore.startDate}</TableCell>
                   <TableCell>
-                    <IconButton
-                      color="primary"
-                      onClick={() => handleEditClick(chore)}
-                    >
-                      <Edit />
-                    </IconButton>
-                    <IconButton
-                      color="secondary"
-                      onClick={() => onDeleteChore(chore.id)}
-                    >
-                      <Delete />
-                    </IconButton>
+                    {isEditing ? (
+                      <FormControl size="small">
+                        <Select
+                          value={editedChore.assignedTo || ''}
+                          onChange={(e) =>
+                            handleChange('assignedTo', e.target.value)
+                          }
+                        >
+                          <MenuItem value="">
+                            <em>Assign to yourself</em>
+                          </MenuItem>
+                          {groupMembers.map((m) => (
+                            <MenuItem key={m.uid} value={m.uid}>
+                              {m.username || m.email}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    ) : assignedUser ? (
+                      assignedUser.username || assignedUser.email
+                    ) : (
+                      'Unknown'
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {isEditing ? (
+                      <TextField
+                        type="number"
+                        value={editedChore.frequency}
+                        onChange={(e) =>
+                          handleChange('frequency', e.target.value)
+                        }
+                        size="small"
+                      />
+                    ) : (
+                      chore.frequency
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {isEditing ? (
+                      <TextField
+                        type="date"
+                        value={editedChore.startDate}
+                        onChange={(e) =>
+                          handleChange('startDate', e.target.value)
+                        }
+                        size="small"
+                      />
+                    ) : (
+                      chore.startDate
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {isEditing ? (
+                      <>
+                        <IconButton color="primary" onClick={handleSaveClick}>
+                          <Save />
+                        </IconButton>
+                        <IconButton
+                          color="secondary"
+                          onClick={handleCancelEdit}
+                        >
+                          <Cancel />
+                        </IconButton>
+                      </>
+                    ) : (
+                      <>
+                        <IconButton
+                          color="primary"
+                          onClick={() => handleEditClick(chore)}
+                        >
+                          <Edit />
+                        </IconButton>
+                        <IconButton
+                          color="secondary"
+                          onClick={() => onDeleteChore(chore.id)}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </>
+                    )}
                   </TableCell>
                 </TableRow>
               );
