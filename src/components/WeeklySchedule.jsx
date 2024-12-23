@@ -18,7 +18,11 @@ function isChoreDue(chore, dateObj) {
   return diff >= 0 && diff % chore.frequency === 0;
 }
 
-export default function WeeklySchedule({ chores, groupMembers }) {
+export default function WeeklySchedule({ chores, groupMembers, selectedMembers }) {
+  const filteredChores = chores.filter((chore) =>
+    selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
+  );
+
   return (
     <div>
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
@@ -37,7 +41,7 @@ export default function WeeklySchedule({ chores, groupMembers }) {
             {[0, 1, 2, 3, 4, 5, 6].map((offset) => {
               const dayObj = dayjs().add(offset, 'day');
               const dayString = dayObj.format('YYYY-MM-DD');
-              const choresForDay = chores.filter((c) => isChoreDue(c, dayObj));
+              const choresForDay = filteredChores.filter((c) => isChoreDue(c, dayObj));
 
               return (
                 <TableRow key={offset}>
@@ -54,8 +58,9 @@ export default function WeeklySchedule({ chores, groupMembers }) {
                           const assignedUser = groupMembers.find(
                             (m) => m.uid === c.assignedTo
                           );
+                          const userColor = assignedUser ? assignedUser.color : 'inherit';
                           return (
-                            <li key={c.id}>
+                            <li key={c.id} style={{ color: userColor }}>
                               {c.title} {'('}
                               {assignedUser
                                 ? assignedUser.username || assignedUser.email

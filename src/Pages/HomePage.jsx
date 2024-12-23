@@ -23,6 +23,9 @@ import {
   Container,
   Box,
   TextField,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
 } from '@mui/material';
 
 import GroupInfo from '../components/GroupInfo';
@@ -39,6 +42,7 @@ export default function HomePage() {
   const [groupMembers, setGroupMembers] = useState([]);
   const [chores, setChores] = useState([]);
   const [dailyCompletions, setDailyCompletions] = useState([]);
+  const [selectedMembers, setSelectedMembers] = useState([]);
 
   // Group create/join states
   const [groupName, setGroupName] = useState('');
@@ -61,6 +65,7 @@ export default function HomePage() {
           setUserData(data);
           if (data.groupId) {
             await loadGroupData(data.groupId);
+            setSelectedMembers([]); // Select all members by default
           }
         }
       }
@@ -227,6 +232,12 @@ export default function HomePage() {
     }
   }
 
+  const handleMemberFilterChange = (uid) => {
+    setSelectedMembers((prev) =>
+      prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid]
+    );
+  };
+
   function handleSignOut() {
     signOut(auth);
   }
@@ -297,6 +308,22 @@ export default function HomePage() {
             {/* Group Info */}
             <GroupInfo group={joinedGroup} members={groupMembers} />
 
+            {/* Member Filter */}
+            <FormGroup row>
+              {groupMembers.map((member) => (
+                <FormControlLabel
+                  key={member.uid}
+                  control={
+                    <Checkbox
+                      checked={selectedMembers.includes(member.uid)}
+                      onChange={() => handleMemberFilterChange(member.uid)}
+                    />
+                  }
+                  label={member.username || member.email}
+                />
+              ))}
+            </FormGroup>
+
             {/* View Toggles */}
             <Box sx={{ marginY: 2 }}>
               <Button
@@ -330,10 +357,15 @@ export default function HomePage() {
                 onEditChore={handleEditChore}
                 onDeleteChore={handleDeleteChore}
                 currentUser={currentUser}
+                selectedMembers={selectedMembers}
               />
             )}
             {view === 'schedule' && (
-              <WeeklySchedule chores={chores} groupMembers={groupMembers} />
+              <WeeklySchedule
+                chores={chores}
+                groupMembers={groupMembers}
+                selectedMembers={selectedMembers}
+              />
             )}
             {view === 'daily' && (
               <DailyView
@@ -341,6 +373,7 @@ export default function HomePage() {
                 groupMembers={groupMembers}
                 dailyCompletions={dailyCompletions}
                 onToggleDailyCompletion={handleToggleDailyCompletion}
+                selectedMembers={selectedMembers}
               />
             )}
           </>

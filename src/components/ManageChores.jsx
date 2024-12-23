@@ -27,6 +27,7 @@ export default function ManageChores({
   onEditChore,
   onDeleteChore,
   currentUser,
+  selectedMembers,
 }) {
   const [choreTitle, setChoreTitle] = useState('');
   const [choreFrequency, setChoreFrequency] = useState(1);
@@ -73,6 +74,10 @@ export default function ManageChores({
   const handleChange = (field, value) => {
     setEditedChore((prev) => ({ ...prev, [field]: value }));
   };
+
+  const filteredChores = chores.filter((chore) =>
+    selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
+  );
 
   return (
     <Box>
@@ -147,17 +152,18 @@ export default function ManageChores({
             </TableRow>
           </TableHead>
           <TableBody>
-            {chores.map((chore) => {
+            {filteredChores.map((chore) => {
               const assignedUser = groupMembers.find(
                 (m) => m.uid === chore.assignedTo
               );
+              const userColor = assignedUser ? assignedUser.color : 'inherit';
 
               const isEditing = editingChoreId === chore.id;
 
               return (
                 <TableRow
                   key={chore.id}
-                  sx={{ height: isEditing ? '80px' : 'auto' }}
+                  sx={{ height: isEditing ? '80px' : 'auto', backgroundColor: userColor }}
                 >
                   <TableCell>
                     {isEditing ? (

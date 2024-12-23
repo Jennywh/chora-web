@@ -23,11 +23,16 @@ export default function DailyView({
   groupMembers,
   dailyCompletions,
   onToggleDailyCompletion,
+  selectedMembers,
 }) {
   const today = dayjs();
   const todayString = today.format('YYYY-MM-DD');
 
   const choresDueToday = chores.filter((c) => isChoreDue(c, today));
+  const filteredChores = choresDueToday.filter(
+    (chore) =>
+      selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
+  );
 
   return (
     <div>
@@ -35,7 +40,7 @@ export default function DailyView({
         Today's Chores ({todayString})
       </Typography>
 
-      {choresDueToday.length === 0 ? (
+      {filteredChores.length === 0 ? (
         <Typography variant="body1" color="text.secondary">
           No chores due today.
         </Typography>
@@ -50,7 +55,7 @@ export default function DailyView({
               </TableRow>
             </TableHead>
             <TableBody>
-              {choresDueToday.map((chore) => {
+              {filteredChores.map((chore) => {
                 const docId = `${chore.id}_${todayString}`;
                 const dailyRecord = dailyCompletions.find(
                   (d) => d.docId === docId
@@ -59,9 +64,10 @@ export default function DailyView({
                 const assignedUser = groupMembers.find(
                   (m) => m.uid === chore.assignedTo
                 );
+                const userColor = assignedUser ? assignedUser.color : 'inherit';
 
                 return (
-                  <TableRow key={chore.id}>
+                  <TableRow key={chore.id} sx={{ backgroundColor: userColor }}>
                     <TableCell>{chore.title}</TableCell>
                     <TableCell>
                       {assignedUser
