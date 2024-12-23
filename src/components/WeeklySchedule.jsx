@@ -56,8 +56,11 @@ export default function WeeklySchedule({ chores, groupMembers }) {
                           );
                           return (
                             <li key={c.id}>
-                              {c.title} {' - '}
-                              {assignedUser ? assignedUser.email : 'Unknown'}
+                              {c.title} {'('}
+                              {assignedUser
+                                ? assignedUser.username || assignedUser.email
+                                : 'Unknown'}
+                              {')'}
                             </li>
                           );
                         })}

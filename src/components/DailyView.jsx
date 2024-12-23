@@ -1,13 +1,15 @@
-// src/components/DailyView.js
 import React from 'react';
 import dayjs from 'dayjs';
 import {
   Typography,
-  Card,
-  CardContent,
-  CardActions,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
   Checkbox,
-  Box,
 } from '@mui/material';
 
 function isChoreDue(chore, dateObj) {
@@ -38,40 +40,52 @@ export default function DailyView({
           No chores due today.
         </Typography>
       ) : (
-        choresDueToday.map((chore) => {
-          const docId = `${chore.id}_${todayString}`;
-          const dailyRecord = dailyCompletions.find((d) => d.docId === docId);
-          const isDone = dailyRecord?.completed || false;
-          const assignedUser = groupMembers.find(
-            (m) => m.uid === chore.assignedTo
-          );
+        <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell>Assigned To</TableCell>
+                <TableCell>Done?</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {choresDueToday.map((chore) => {
+                const docId = `${chore.id}_${todayString}`;
+                const dailyRecord = dailyCompletions.find(
+                  (d) => d.docId === docId
+                );
+                const isDone = dailyRecord?.completed || false;
+                const assignedUser = groupMembers.find(
+                  (m) => m.uid === chore.assignedTo
+                );
 
-          return (
-            <Card key={chore.id} sx={{ marginBottom: 2 }}>
-              <CardContent>
-                <Typography variant="h6">{chore.title}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {assignedUser ? assignedUser.email : 'Unknown'}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Checkbox
-                    checked={isDone}
-                    onChange={(e) =>
-                      onToggleDailyCompletion(
-                        chore.id,
-                        todayString,
-                        e.target.checked
-                      )
-                    }
-                  />
-                  <Typography variant="body2">Mark Complete</Typography>
-                </Box>
-              </CardActions>
-            </Card>
-          );
-        })
+                return (
+                  <TableRow key={chore.id}>
+                    <TableCell>{chore.title}</TableCell>
+                    <TableCell>
+                      {assignedUser
+                        ? assignedUser.username || assignedUser.email
+                        : 'Unknown'}
+                    </TableCell>
+                    <TableCell>
+                      <Checkbox
+                        checked={isDone}
+                        onChange={(e) =>
+                          onToggleDailyCompletion(
+                            chore.id,
+                            todayString,
+                            e.target.checked
+                          )
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
     </div>
   );

@@ -1,4 +1,3 @@
-// src/components/ManageChores.js
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import {
@@ -17,12 +16,16 @@ import {
   FormControl,
   InputLabel,
   Box,
+  IconButton,
 } from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
 
 export default function ManageChores({
   chores,
   groupMembers,
   onAddChore,
+  onEditChore,
+  onDeleteChore,
   currentUser,
 }) {
   const [choreTitle, setChoreTitle] = useState('');
@@ -31,60 +34,51 @@ export default function ManageChores({
     dayjs().format('YYYY-MM-DD')
   );
   const [assignedUid, setAssignedUid] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [editingChoreId, setEditingChoreId] = useState(null);
 
   const handleAddChoreClick = () => {
     if (!choreTitle.trim()) return;
-    onAddChore({
-      title: choreTitle,
-      frequency: Number(choreFrequency),
-      startDate: choreStartDate,
-      assignedTo: assignedUid || currentUser.uid,
-    });
-    // reset form
+
+    if (editMode) {
+      onEditChore({
+        id: editingChoreId,
+        title: choreTitle,
+        frequency: Number(choreFrequency),
+        startDate: choreStartDate,
+        assignedTo: assignedUid || currentUser.uid,
+      });
+      setEditMode(false);
+      setEditingChoreId(null);
+    } else {
+      onAddChore({
+        title: choreTitle,
+        frequency: Number(choreFrequency),
+        startDate: choreStartDate,
+        assignedTo: assignedUid || currentUser.uid,
+      });
+    }
+
+    // Reset form
     setChoreTitle('');
     setChoreFrequency(1);
     setChoreStartDate(dayjs().format('YYYY-MM-DD'));
     setAssignedUid('');
   };
 
+  const handleEditClick = (chore) => {
+    setChoreTitle(chore.title);
+    setChoreFrequency(chore.frequency);
+    setChoreStartDate(chore.startDate);
+    setAssignedUid(chore.assignedTo);
+    setEditMode(true);
+    setEditingChoreId(chore.id);
+  };
+
   return (
     <Box>
       <Typography variant="h6" sx={{ marginBottom: 2 }}>
         Manage Chores
-      </Typography>
-
-      <TableContainer component={Paper} sx={{ marginBottom: 2 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Assigned</TableCell>
-              <TableCell>Frequency (days)</TableCell>
-              <TableCell>Start Date</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {chores.map((chore) => {
-              const assignedUser = groupMembers.find(
-                (m) => m.uid === chore.assignedTo
-              );
-              return (
-                <TableRow key={chore.id}>
-                  <TableCell>{chore.title}</TableCell>
-                  <TableCell>
-                    {assignedUser ? assignedUser.email : 'Unknown'}
-                  </TableCell>
-                  <TableCell>{chore.frequency}</TableCell>
-                  <TableCell>{chore.startDate}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <Typography variant="subtitle1" sx={{ marginBottom: 1 }}>
-        Add a New Chore
       </Typography>
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
         <TextField
@@ -106,7 +100,7 @@ export default function ManageChores({
             </MenuItem>
             {groupMembers.map((m) => (
               <MenuItem key={m.uid} value={m.uid}>
-                {m.email}
+                {m.username || m.email}
               </MenuItem>
             ))}
           </Select>
@@ -131,10 +125,61 @@ export default function ManageChores({
           sx={{ width: 150 }}
         />
 
-        <Button variant="contained" onClick={handleAddChoreClick}>
-          Add
+        <Button
+          variant="contained"
+          color={editMode ? 'primary' : 'success'}
+          onClick={handleAddChoreClick}
+        >
+          {editMode ? 'Save Changes' : 'Add'}
         </Button>
       </Box>
+
+      <TableContainer component={Paper} sx={{ marginBottom: 2 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Title</TableCell>
+              <TableCell>Assigned</TableCell>
+              <TableCell>Repeats Every (Days)</TableCell>
+              <TableCell>Start Date</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {chores.map((chore) => {
+              const assignedUser = groupMembers.find(
+                (m) => m.uid === chore.assignedTo
+              );
+              return (
+                <TableRow key={chore.id}>
+                  <TableCell>{chore.title}</TableCell>
+                  <TableCell>
+                    {assignedUser
+                      ? assignedUser.username || assignedUser.email
+                      : 'Unknown'}
+                  </TableCell>
+                  <TableCell>{chore.frequency}</TableCell>
+                  <TableCell>{chore.startDate}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleEditClick(chore)}
+                    >
+                      <Edit />
+                    </IconButton>
+                    <IconButton
+                      color="secondary"
+                      onClick={() => onDeleteChore(chore.id)}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 }

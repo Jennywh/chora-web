@@ -1,4 +1,3 @@
-// src/pages/HomePage.js
 import React, { useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import {
@@ -10,6 +9,7 @@ import {
   query,
   where,
   addDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
@@ -169,6 +169,19 @@ export default function HomePage() {
     }
   }
 
+  async function handleEditChore(updatedChore) {
+    const { id, ...data } = updatedChore;
+    await setDoc(doc(db, 'groups', joinedGroup.id, 'chores', id), data, {
+      merge: true,
+    });
+    await fetchChores(joinedGroup.id);
+  }
+
+  async function handleDeleteChore(choreId) {
+    await deleteDoc(doc(db, 'groups', joinedGroup.id, 'chores', choreId));
+    await fetchChores(joinedGroup.id);
+  }
+
   // Add a new chore
   async function handleAddChore({ title, frequency, startDate, assignedTo }) {
     if (!title.trim() || !joinedGroup) return;
@@ -226,6 +239,9 @@ export default function HomePage() {
     );
   }
 
+  // Display the username or fallback to email
+  const displayName = userData.username || currentUser.email;
+
   return (
     <>
       {/* Top AppBar for navigation and sign-out */}
@@ -242,7 +258,7 @@ export default function HomePage() {
 
       <Container maxWidth="md" sx={{ marginY: 3 }}>
         <Typography variant="h5" gutterBottom>
-          Hello, {currentUser.email}
+          Hello, {displayName}
         </Typography>
         {!joinedGroup ? (
           <>
@@ -291,17 +307,17 @@ export default function HomePage() {
                 Manage Chores
               </Button>
               <Button
-                variant={view === 'schedule' ? 'contained' : 'outlined'}
-                onClick={() => setView('schedule')}
-                sx={{ marginRight: 1 }}
-              >
-                Weekly Schedule
-              </Button>
-              <Button
                 variant={view === 'daily' ? 'contained' : 'outlined'}
                 onClick={() => setView('daily')}
+                sx={{ marginRight: 1 }}
               >
                 Daily View
+              </Button>
+              <Button
+                variant={view === 'schedule' ? 'contained' : 'outlined'}
+                onClick={() => setView('schedule')}
+              >
+                Weekly Schedule
               </Button>
             </Box>
 
@@ -311,6 +327,8 @@ export default function HomePage() {
                 chores={chores}
                 groupMembers={groupMembers}
                 onAddChore={handleAddChore}
+                onEditChore={handleEditChore}
+                onDeleteChore={handleDeleteChore}
                 currentUser={currentUser}
               />
             )}
