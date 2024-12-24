@@ -19,6 +19,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { Edit, Delete, Save, Cancel } from '@mui/icons-material';
+import { formatDate } from '../utils/dateUtils'; // Import the utility function
 
 export default function ManageChores({
   chores,
@@ -245,7 +246,7 @@ export default function ManageChores({
                         size="small"
                       />
                     ) : (
-                      chore.startDate
+                      formatDate(dayjs(chore.startDate, 'YYYY-MM-DD'))
                     )}
                   </TableCell>
                   <TableCell>
