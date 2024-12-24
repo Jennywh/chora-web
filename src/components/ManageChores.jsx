@@ -131,7 +131,7 @@ export default function ManageChores({
           label="Repeats Every (Days)"
           type="number"
           value={choreFrequency}
-          onChange={(e) => setChoreFrequency(Math.max(1, e.target.value))}
+          onChange={(e) => setChoreFrequency(e.target.value)}
           size="small"
           sx={{ width: 180 }}
         />
