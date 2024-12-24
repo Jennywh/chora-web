@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/chora-web/static/css/main.e6c13ad2.css",
-    "main.js": "/chora-web/static/js/main.5a9aeda2.js",
+    "main.js": "/chora-web/static/js/main.fb2c824e.js",
     "static/js/488.5f7c2455.chunk.js": "/chora-web/static/js/488.5f7c2455.chunk.js",
     "index.html": "/chora-web/index.html",
     "main.e6c13ad2.css.map": "/chora-web/static/css/main.e6c13ad2.css.map",
-    "main.5a9aeda2.js.map": "/chora-web/static/js/main.5a9aeda2.js.map",
+    "main.fb2c824e.js.map": "/chora-web/static/js/main.fb2c824e.js.map",
     "488.5f7c2455.chunk.js.map": "/chora-web/static/js/488.5f7c2455.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.e6c13ad2.css",
-    "static/js/main.5a9aeda2.js"
+    "static/js/main.fb2c824e.js"
   ]
 }
