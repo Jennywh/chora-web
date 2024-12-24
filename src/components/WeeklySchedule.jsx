@@ -50,7 +50,7 @@ export default function WeeklySchedule({
                 <TableCell key={index}>
                   {index === 0 ? 'Today' : dayObj.format('ddd')}
                   <br />
-                  {dayObj.format('YYYY-MM-DD')}
+                  {dayObj.format('MMM D')}
                 </TableCell>
               ))}
             </TableRow>
