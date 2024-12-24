@@ -23,7 +23,10 @@ import {
   Container,
   Box,
   Chip,
+  IconButton,
+  Avatar,
 } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
 import ManageChores from '../components/ManageChores';
 import WeeklySchedule from '../components/WeeklySchedule';
@@ -257,19 +260,17 @@ export default function HomePage() {
     );
   }
 
-  // Display the username or fallback to email
-  const displayName = userData.username || currentUser.email;
-
   return (
     <>
       {/* Top AppBar for navigation and sign-out */}
       <AppBar position="static">
         <Toolbar>
+          <Avatar alt="Chora Logo" src="/path/to/logo.png" sx={{ mr: 2 }} />
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Chora
           </Typography>
           <Button color="inherit" onClick={handleSignOut}>
-            {userData.username}, Sign Out
+            Sign Out
           </Button>
         </Toolbar>
       </AppBar>
