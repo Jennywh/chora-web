@@ -21,7 +21,7 @@ import {
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState('login'); // "login" or "signup"
+  const [mode, setMode] = useState('signup'); // "login" or "signup"
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -86,8 +86,8 @@ export default function LoginPage() {
           textColor="primary"
           centered
         >
-          <Tab label="Sign In" value="login" />
           <Tab label="Sign Up" value="signup" />
+          <Tab label="Sign In" value="login" />
         </Tabs>
 
         <Box

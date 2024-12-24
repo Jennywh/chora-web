@@ -275,7 +275,7 @@ export default function HomePage() {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="md" sx={{ marginY: 3 }}>
+      <Container maxWidth="lg" sx={{ marginY: 3 }}>
         {!joinedGroup ? (
           <GroupSetup
             onJoinGroup={handleJoinGroup}

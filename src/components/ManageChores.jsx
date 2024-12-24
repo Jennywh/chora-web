@@ -131,9 +131,9 @@ export default function ManageChores({
           label="Repeats Every (Days)"
           type="number"
           value={choreFrequency}
-          onChange={(e) => setChoreFrequency(e.target.value)}
+          onChange={(e) => setChoreFrequency(Math.max(1, e.target.value))}
           size="small"
-          sx={{ width: 120 }}
+          sx={{ width: 180 }}
         />
 
         <TextField
@@ -227,7 +227,7 @@ export default function ManageChores({
                         type="number"
                         value={editedChore.frequency}
                         onChange={(e) =>
-                          handleChange('frequency', e.target.value)
+                          handleChange('frequency', Math.max(1, e.target.value))
                         }
                         size="small"
                       />
