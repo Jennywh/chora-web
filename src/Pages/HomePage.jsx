@@ -247,54 +247,55 @@ export default function HomePage() {
 
   return (
     <>
-      <AppBar
-        position="static"
-        sx={{ backgroundColor: '#ffffff', color: '#333', boxShadow: 'none' }}
-      >
-        <Toolbar
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            padding: '0 24px',
-          }}
+      {joinedGroup && (
+        <AppBar
+          position="static"
+          sx={{ backgroundColor: '#ffffff', color: '#333', boxShadow: 'none' }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              Chora
-            </Typography>
-          </Box>
-          <Tabs
-            value={view}
-            onChange={(e, newValue) => setView(newValue)}
-            textColor="inherit"
-            indicatorColor="primary"
-            sx={{ flexGrow: 1, marginLeft: 4 }}
+          <Toolbar
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              padding: '0 24px',
+            }}
           >
-            {/* Remove the Chores tab */}
-            <Tab
-              value="calendar"
-              label="Calendar"
-              icon={<CalendarViewWeekIcon />}
-              iconPosition="start"
-              sx={{ textTransform: 'none', fontWeight: 500 }}
-            />
-            <Tab
-              value="reports"
-              label="Reports"
-              icon={<AssessmentIcon />}
-              iconPosition="start"
-              sx={{ textTransform: 'none', fontWeight: 500 }}
-            />
-          </Tabs>
-          <Button
-            color="primary"
-            onClick={handleSignOut}
-            sx={{ textTransform: 'none', fontWeight: 600 }}
-          >
-            Sign Out
-          </Button>
-        </Toolbar>
-      </AppBar>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                Chora
+              </Typography>
+            </Box>
+            <Tabs
+              value={view}
+              onChange={(e, newValue) => setView(newValue)}
+              textColor="inherit"
+              indicatorColor="primary"
+              sx={{ flexGrow: 1, marginLeft: 4 }}
+            >
+              <Tab
+                value="calendar"
+                label="Calendar"
+                icon={<CalendarViewWeekIcon />}
+                iconPosition="start"
+                sx={{ textTransform: 'none', fontWeight: 500 }}
+              />
+              <Tab
+                value="reports"
+                label="Reports"
+                icon={<AssessmentIcon />}
+                iconPosition="start"
+                sx={{ textTransform: 'none', fontWeight: 500 }}
+              />
+            </Tabs>
+            <Button
+              color="primary"
+              onClick={handleSignOut}
+              sx={{ textTransform: 'none', fontWeight: 600 }}
+            >
+              Sign Out
+            </Button>
+          </Toolbar>
+        </AppBar>
+      )}
 
       <Container maxWidth="lg" sx={{ marginTop: 4 }}>
         {!joinedGroup ? (
@@ -308,69 +309,70 @@ export default function HomePage() {
             errorMessage={errorMessage}
           />
         ) : (
-          <Box
-            sx={{
-              backgroundColor: '#f9f9f9',
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              padding: 3,
-              marginBottom: 3,
-              position: 'relative', // Add position relative to the container
-            }}
-          >
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleOpenManageChoresModal}
-              sx={{ position: 'absolute', top: 16, right: 16 }} // Position button to top right
+          <>
+            <Box
+              sx={{
+                backgroundColor: '#f9f9f9',
+                border: '1px solid #ddd',
+                borderRadius: '8px',
+                padding: 3,
+                marginBottom: 3,
+                position: 'relative',
+              }}
             >
-              Manage Chores
-            </Button>
-            <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: 2 }}>
-              {joinedGroup.name}
-            </Typography>
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              sx={{ marginBottom: 3 }}
-            >
-              Group ID: #{joinedGroup.id}
-            </Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {groupMembers.map((member) => (
-                <Chip
-                  key={member.uid}
-                  label={
-                    member.uid === currentUser.uid
-                      ? `${member.username || member.email} (myself)`
-                      : member.username || member.email
-                  }
-                  onClick={() => handleMemberFilterChange(member.uid)}
-                  color={
-                    selectedMembers.includes(member.uid) ? 'primary' : 'default'
-                  }
-                />
-              ))}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleOpenManageChoresModal}
+                sx={{ position: 'absolute', top: 16, right: 16 }}
+              >
+                Manage Chores
+              </Button>
+              <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: 2 }}>
+                {joinedGroup.name}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="textSecondary"
+                sx={{ marginBottom: 3 }}
+              >
+                Group ID: #{joinedGroup.id}
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {groupMembers.map((member) => (
+                  <Chip
+                    key={member.uid}
+                    label={
+                      member.uid === currentUser.uid
+                        ? `${member.username || member.email} (myself)`
+                        : member.username || member.email
+                    }
+                    onClick={() => handleMemberFilterChange(member.uid)}
+                    color={
+                      selectedMembers.includes(member.uid) ? 'primary' : 'default'
+                    }
+                  />
+                ))}
+              </Box>
             </Box>
-          </Box>
-        )}
-        {/* Conditionally Render Subviews */}
-        {view === 'calendar' && (
-          <CalendarView
-            chores={chores}
-            groupMembers={groupMembers}
-            selectedMembers={selectedMembers}
-            dailyCompletions={dailyCompletions}
-            onToggleDailyCompletion={handleToggleDailyCompletion}
-            currentUser={currentUser}
-          />
-        )}
-        {view === 'reports' && (
-          <Reports
-            chores={chores}
-            dailyCompletions={dailyCompletions}
-            groupMembers={groupMembers}
-          />
+            {view === 'calendar' && (
+              <CalendarView
+                chores={chores}
+                groupMembers={groupMembers}
+                selectedMembers={selectedMembers}
+                dailyCompletions={dailyCompletions}
+                onToggleDailyCompletion={handleToggleDailyCompletion}
+                currentUser={currentUser}
+              />
+            )}
+            {view === 'reports' && (
+              <Reports
+                chores={chores}
+                dailyCompletions={dailyCompletions}
+                groupMembers={groupMembers}
+              />
+            )}
+          </>
         )}
       </Container>
 
@@ -384,9 +386,9 @@ export default function HomePage() {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '80%', // Make the modal wider
-            maxHeight: '90vh', // Set max height for scrollability
-            overflowY: 'auto', // Enable vertical scrolling
+            width: '80%',
+            maxHeight: '90vh',
+            overflowY: 'auto',
             bgcolor: 'background.paper',
             boxShadow: 24,
             p: 4,
@@ -400,8 +402,8 @@ export default function HomePage() {
             currentUser={currentUser}
             currentUserName={userData.username || userData.email}
             selectedMembers={selectedMembers}
-            joinedGroup={joinedGroup} // Pass joinedGroup to ManageChores
-            fetchChores={fetchChores} // Pass fetchChores to ManageChores
+            joinedGroup={joinedGroup}
+            fetchChores={fetchChores}
           />
         </Box>
       </Modal>
