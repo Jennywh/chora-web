@@ -24,7 +24,7 @@ export default function WeeklySchedule({
   chores,
   groupMembers,
   selectedMembers,
-  dailyCompletions, // Add dailyCompletions prop
+  dailyCompletions,
 }) {
   const filteredChores = chores
     .filter(
@@ -34,8 +34,9 @@ export default function WeeklySchedule({
     )
     .sort((a, b) => dayjs(b.addedTime).diff(dayjs(a.addedTime)));
 
+  const startOfWeek = dayjs().startOf('week'); // Start of the current week (Sunday)
   const daysOfWeek = [0, 1, 2, 3, 4, 5, 6].map((offset) =>
-    dayjs().add(offset, 'day')
+    startOfWeek.add(offset, 'day')
   );
 
   return (
@@ -50,7 +51,7 @@ export default function WeeklySchedule({
               <TableCell>Chore</TableCell>
               {daysOfWeek.map((dayObj, index) => (
                 <TableCell key={index}>
-                  {index === 0 ? 'Today' : dayObj.format('ddd')}
+                  {dayObj.format('ddd')}
                   <br />
                   {formatDate(dayObj)} {/* Use the utility function */}
                 </TableCell>
