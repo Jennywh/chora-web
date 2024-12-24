@@ -8,7 +8,6 @@ import {
   collection,
   query,
   where,
-  addDoc,
   deleteDoc,
 } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -22,17 +21,13 @@ import {
   Container,
   Box,
   Chip,
-  Avatar,
   Tabs,
   Tab,
   Modal,
 } from '@mui/material';
 import ManageChores from '../components/ManageChores';
-import WeeklySchedule from '../components/WeeklySchedule';
-import DailyView from '../components/DailyView';
 import GroupSetup from '../components/GroupSetup';
 import Reports from '../components/Reports';
-import TodayIcon from '@mui/icons-material/Today';
 import CalendarViewWeekIcon from '@mui/icons-material/CalendarViewWeek';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import CalendarView from '../components/CalendarView';
@@ -50,9 +45,8 @@ export default function HomePage() {
   const [groupName, setGroupName] = useState('');
   const [groupIdInput, setGroupIdInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [view, setView] = useState('chores');
+  const [view, setView] = useState('calendar'); // Set default view to 'calendar'
   const [isManageChoresModalOpen, setIsManageChoresModalOpen] = useState(false); // State for modal
-  const [isWeeklyView, setIsWeeklyView] = useState(false); // State to toggle views
 
   const loadGroupData = useCallback(async (gId) => {
     try {
@@ -276,13 +270,7 @@ export default function HomePage() {
             indicatorColor="primary"
             sx={{ flexGrow: 1, marginLeft: 4 }}
           >
-            <Tab
-              value="chores"
-              label="Chores"
-              icon={<TodayIcon />}
-              iconPosition="start"
-              sx={{ textTransform: 'none', fontWeight: 500 }}
-            />
+            {/* Remove the Chores tab */}
             <Tab
               value="calendar"
               label="Calendar"
@@ -327,8 +315,17 @@ export default function HomePage() {
               borderRadius: '8px',
               padding: 3,
               marginBottom: 3,
+              position: 'relative', // Add position relative to the container
             }}
           >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleOpenManageChoresModal}
+              sx={{ position: 'absolute', top: 16, right: 16 }} // Position button to top right
+            >
+              Manage Chores
+            </Button>
             <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: 2 }}>
               {joinedGroup.name}
             </Typography>
@@ -355,44 +352,9 @@ export default function HomePage() {
                 />
               ))}
             </Box>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleOpenManageChoresModal}
-              sx={{ marginTop: 2 }}
-            >
-              Manage Chores
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => setIsWeeklyView(!isWeeklyView)}
-              sx={{ marginTop: 2, marginLeft: 2 }}
-            >
-              {isWeeklyView ? 'Daily View' : 'Weekly View'}
-            </Button>
           </Box>
         )}
         {/* Conditionally Render Subviews */}
-        {view === 'chores' && (
-          isWeeklyView ? (
-            <WeeklySchedule
-              chores={chores}
-              groupMembers={groupMembers}
-              selectedMembers={selectedMembers}
-              dailyCompletions={dailyCompletions}
-            />
-          ) : (
-            <DailyView
-              chores={chores}
-              groupMembers={groupMembers}
-              dailyCompletions={dailyCompletions}
-              onToggleDailyCompletion={handleToggleDailyCompletion}
-              selectedMembers={selectedMembers}
-              currentUser={currentUser}
-            />
-          )
-        )}
         {view === 'calendar' && (
           <CalendarView
             chores={chores}
