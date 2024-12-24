@@ -392,9 +392,10 @@ export default function HomePage() {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: 400,
+            width: '80%', // Make the modal wider
+            maxHeight: '90vh', // Set max height for scrollability
+            overflowY: 'auto', // Enable vertical scrolling
             bgcolor: 'background.paper',
-            border: '2px solid #000',
             boxShadow: 24,
             p: 4,
           }}
