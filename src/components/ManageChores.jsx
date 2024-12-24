@@ -114,7 +114,7 @@ export default function ManageChores({
             onChange={(e) => setAssignedUid(e.target.value)}
           >
             <MenuItem value={currentUser.uid}>
-              {currentUserName || currentUser.email} (yourself)
+              {currentUserName || currentUser.email} (myself)
             </MenuItem>
             {groupMembers
               .filter((m) => m.uid !== currentUser.uid)
@@ -203,8 +203,7 @@ export default function ManageChores({
                           }
                         >
                           <MenuItem value={currentUser.uid}>
-                            {currentUser.username || currentUser.email}{' '}
-                            (yourself)
+                            {currentUser.username || currentUser.email} (myself)
                           </MenuItem>
                           {groupMembers
                             .filter((m) => m.uid !== currentUser.uid)

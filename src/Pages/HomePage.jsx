@@ -314,7 +314,11 @@ export default function HomePage() {
                 {groupMembers.map((member) => (
                   <Chip
                     key={member.uid}
-                    label={member.username || member.email}
+                    label={
+                      member.uid === currentUser.uid
+                        ? `${member.username || member.email} (myself)`
+                        : member.username || member.email
+                    }
                     onClick={() => handleMemberFilterChange(member.uid)}
                     color={
                       selectedMembers.includes(member.uid)
