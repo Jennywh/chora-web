@@ -22,13 +22,13 @@ import {
   Button,
   Container,
   Box,
-  TextField,
   Chip,
 } from '@mui/material';
 
 import ManageChores from '../components/ManageChores';
 import WeeklySchedule from '../components/WeeklySchedule';
 import DailyView from '../components/DailyView';
+import GroupSetup from '../components/GroupSetup';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -150,6 +150,7 @@ export default function HomePage() {
   }
 
   async function handleJoinGroup() {
+    
     if (!groupIdInput.trim()) return;
     try {
       const groupRef = doc(db, 'groups', groupIdInput);
@@ -265,54 +266,14 @@ export default function HomePage() {
 
       <Container maxWidth="md" sx={{ marginY: 3 }}>
         {!joinedGroup ? (
-          <>
-            <Box
-              sx={{
-                marginBottom: 2,
-                padding: 2,
-                backgroundColor: '#f5f5f5',
-                borderRadius: 1,
-              }}
-            >
-              <Typography variant="h5" gutterBottom>
-                Join an Existing Group
-              </Typography>
-              <TextField
-                label="Enter Group ID"
-                variant="outlined"
-                size="small"
-                value={groupIdInput}
-                onChange={(e) => setGroupIdInput(e.target.value)}
-                sx={{ marginRight: 1 }}
-              />
-              <Button variant="contained" onClick={handleJoinGroup}>
-                Join Group
-              </Button>
-            </Box>
-            <Box
-              sx={{
-                marginBottom: 2,
-                padding: 2,
-                backgroundColor: '#f5f5f5',
-                borderRadius: 1,
-              }}
-            >
-              <Typography variant="h5" gutterBottom>
-                Create a New Group
-              </Typography>
-              <TextField
-                label="New Group Name"
-                variant="outlined"
-                size="small"
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
-                sx={{ marginRight: 1 }}
-              />
-              <Button variant="contained" onClick={handleCreateGroup}>
-                Create Group
-              </Button>
-            </Box>
-          </>
+          <GroupSetup
+            onJoinGroup={handleJoinGroup}
+            onCreateGroup={handleCreateGroup}
+            groupIdInput={groupIdInput}
+            setGroupIdInput={setGroupIdInput}
+            groupName={groupName}
+            setGroupName={setGroupName}
+          />
         ) : (
           <>
             {/* Group Info */}
