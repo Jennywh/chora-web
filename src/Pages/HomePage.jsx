@@ -28,7 +28,7 @@ import {
 import ManageChores from '../components/ManageChores';
 import GroupSetup from '../components/GroupSetup';
 import Reports from '../components/Reports';
-import CalendarViewWeekIcon from '@mui/icons-material/CalendarViewWeek';
+import TodayIcon from '@mui/icons-material/Today';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import CalendarView from '../components/CalendarView';
 
@@ -274,7 +274,7 @@ export default function HomePage() {
               <Tab
                 value="calendar"
                 label="Calendar"
-                icon={<CalendarViewWeekIcon />}
+                icon={<TodayIcon />}
                 iconPosition="start"
                 sx={{ textTransform: 'none', fontWeight: 500 }}
               />
@@ -315,26 +315,36 @@ export default function HomePage() {
                 backgroundColor: '#f9f9f9',
                 border: '1px solid #ddd',
                 borderRadius: '8px',
-                padding: 3,
+                padding: 2,
                 marginBottom: 3,
                 position: 'relative',
+                maxWidth: '400px', // Limit the width
+                marginLeft: 0, // Align to the left
               }}
             >
               <Button
                 variant="contained"
                 color="primary"
                 onClick={handleOpenManageChoresModal}
-                sx={{ position: 'absolute', top: 16, right: 16 }}
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  fontSize: '0.75rem',
+                }} // Smaller button
               >
-                Manage Chores
+                Manage
               </Button>
-              <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: 2 }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 600, marginBottom: 1, fontSize: '1.25rem' }} // Smaller font size
+              >
                 {joinedGroup.name}
               </Typography>
               <Typography
                 variant="body2"
                 color="textSecondary"
-                sx={{ marginBottom: 3 }}
+                sx={{ marginBottom: 2, fontSize: '0.875rem' }} // Smaller font size
               >
                 Group ID: #{joinedGroup.id}
               </Typography>
@@ -349,8 +359,11 @@ export default function HomePage() {
                     }
                     onClick={() => handleMemberFilterChange(member.uid)}
                     color={
-                      selectedMembers.includes(member.uid) ? 'primary' : 'default'
+                      selectedMembers.includes(member.uid)
+                        ? 'primary'
+                        : 'default'
                     }
+                    sx={{ fontSize: '0.75rem' }} // Smaller chip font size
                   />
                 ))}
               </Box>

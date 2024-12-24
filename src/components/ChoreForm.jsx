@@ -130,8 +130,8 @@ export function ChoreForm({
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 3,
-        p: 3,
+        gap: 2,
+        p: 2,
         backgroundColor: '#ffffff',
         borderRadius: '8px',
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
@@ -150,77 +150,81 @@ export function ChoreForm({
         sx={{ backgroundColor: '#f9f9f9', borderRadius: '4px' }}
       />
 
-      <FormControl
-        fullWidth
-        sx={{ backgroundColor: '#f9f9f9', borderRadius: '4px' }}
-      >
-        <InputLabel id="assignedTo-label">Assign To</InputLabel>
-        <Select
-          labelId="assignedTo-label"
-          id="assignedTo"
-          value={assignedTo}
-          onChange={handleChange('assignedTo')}
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <FormControl
+          fullWidth
+          sx={{ backgroundColor: '#f9f9f9', borderRadius: '4px' }}
+        >
+          <InputLabel id="assignedTo-label">Assign To</InputLabel>
+          <Select
+            labelId="assignedTo-label"
+            id="assignedTo"
+            value={assignedTo}
+            onChange={handleChange('assignedTo')}
+            required
+          >
+            <MenuItem value="">
+              <em>Select a Member</em>
+            </MenuItem>
+            {groupMembers &&
+              groupMembers.map((member) => (
+                <MenuItem key={member.uid} value={member.uid}>
+                  {member.username}
+                  {member.uid === currentUserUid ? ' (myself)' : ''}
+                </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
+
+        <TextField
+          label="Start Date"
+          type="date"
+          value={startDate.toISOString().split('T')[0]}
+          onChange={handleDateChange}
+          InputLabelProps={{ shrink: true }}
+          inputProps={{ min: new Date().toISOString().split('T')[0] }}
           required
+          fullWidth
+          sx={{ backgroundColor: '#f9f9f9', borderRadius: '4px' }}
+        />
+      </Box>
+
+      <Box sx={{ display: 'flex', gap: 2 }}>
+        <FormControl
+          fullWidth
+          sx={{ backgroundColor: '#f9f9f9', borderRadius: '4px' }}
         >
-          <MenuItem value="">
-            <em>Select a Member</em>
-          </MenuItem>
-          {groupMembers &&
-            groupMembers.map((member) => (
-              <MenuItem key={member.uid} value={member.uid}>
-                {member.username}
-                {member.uid === currentUserUid ? ' (myself)' : ''}
-              </MenuItem>
-            ))}
-        </Select>
-      </FormControl>
+          <InputLabel id="repeatType-label">Repeat</InputLabel>
+          <Select
+            labelId="repeatType-label"
+            id="repeatType"
+            value={repeatType}
+            onChange={handleChange('repeatType')}
+          >
+            <MenuItem value="none">Don't Repeat</MenuItem>
+            <MenuItem value="daily">Daily</MenuItem>
+            <MenuItem value="weekly">Weekly</MenuItem>
+          </Select>
+        </FormControl>
 
-      <TextField
-        label="Start Date"
-        type="date"
-        value={startDate.toISOString().split('T')[0]}
-        onChange={handleDateChange}
-        InputLabelProps={{ shrink: true }}
-        inputProps={{ min: new Date().toISOString().split('T')[0] }}
-        required
-        fullWidth
-        sx={{ backgroundColor: '#f9f9f9', borderRadius: '4px' }}
-      />
-
-      <FormControl
-        fullWidth
-        sx={{ backgroundColor: '#f9f9f9', borderRadius: '4px' }}
-      >
-        <InputLabel id="repeatType-label">Repeat</InputLabel>
-        <Select
-          labelId="repeatType-label"
-          id="repeatType"
-          value={repeatType}
-          onChange={handleChange('repeatType')}
-        >
-          <MenuItem value="none">Don't Repeat</MenuItem>
-          <MenuItem value="daily">Daily</MenuItem>
-          <MenuItem value="weekly">Weekly</MenuItem>
-        </Select>
-      </FormControl>
-
-      {repeatType === 'daily' && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <TextField
-            label="Repeat Every"
-            type="number"
-            value={repeatDays}
-            onChange={handleChange('repeatDays')}
-            inputProps={{ min: 1, max: 30 }}
-            sx={{
-              width: '100px',
-              backgroundColor: '#f9f9f9',
-              borderRadius: '4px',
-            }}
-          />
-          <Typography>days</Typography>
-        </Box>
-      )}
+        {repeatType === 'daily' && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <TextField
+              label="Repeat Every"
+              type="number"
+              value={repeatDays}
+              onChange={handleChange('repeatDays')}
+              inputProps={{ min: 1, max: 30 }}
+              sx={{
+                width: '100px',
+                backgroundColor: '#f9f9f9',
+                borderRadius: '4px',
+              }}
+            />
+            <Typography>days</Typography>
+          </Box>
+        )}
+      </Box>
 
       {repeatType === 'weekly' && (
         <Box>
@@ -242,7 +246,7 @@ export function ChoreForm({
         </Box>
       )}
 
-      <Box sx={{ display: 'flex', gap: 2 }}>
+      <Box sx={{ display: 'flex', gap: 1 }}>
         <Button
           type="submit"
           variant="contained"
@@ -252,7 +256,7 @@ export function ChoreForm({
             fontWeight: 600,
             textTransform: 'none',
             borderRadius: '4px',
-            paddingY: 1.5,
+            paddingY: 1,
           }}
         >
           Add Chore
@@ -265,7 +269,7 @@ export function ChoreForm({
             fontWeight: 600,
             textTransform: 'none',
             borderRadius: '4px',
-            paddingY: 1.5,
+            paddingY: 1,
           }}
           onClick={onCancel} // Add onClick handler for cancel button
         >

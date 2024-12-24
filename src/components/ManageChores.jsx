@@ -83,25 +83,25 @@ export default function ManageChores({
   return (
     <Box
       sx={{
-        padding: 3,
+        padding: 2,
         backgroundColor: '#ffffff',
         borderRadius: '8px',
         boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
       }}
     >
       <Typography
-        variant="h5"
+        variant="h6"
         sx={{
           fontWeight: 600,
-          marginBottom: 3,
-          borderBottom: '2px solid #ddd',
+          marginBottom: 2,
+          borderBottom: '1px solid #ddd',
           paddingBottom: 1,
         }}
       >
         Manage Chores
       </Typography>
 
-      <Box sx={{ marginBottom: 3 }}>
+      <Box sx={{ marginBottom: 2 }}>
         {showAddForm ? (
           <ChoreForm
             onSubmit={(newChore) => {
@@ -273,7 +273,7 @@ export default function ManageChores({
 
       {filteredChores.length === 0 && (
         <Typography
-          variant="body1"
+          variant="body2"
           color="textSecondary"
           sx={{ textAlign: 'center', marginTop: 2 }}
         >

@@ -14,6 +14,8 @@ import {
   Checkbox,
   Switch,
   FormControlLabel,
+  ButtonGroup,
+  Button,
 } from '@mui/material';
 import { formatDate } from '../utils/dateUtils';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -44,7 +46,7 @@ export default function CalendarView({
   currentUser,
 }) {
   const [weekOffset, setWeekOffset] = useState(0);
-  const [view, setView] = useState('weekly'); // 'weekly' or 'daily'
+  const [view, setView] = useState('daily'); // 'weekly' or 'daily'
 
   const filteredChores = chores
     .filter(
@@ -77,7 +79,8 @@ export default function CalendarView({
   const filteredChoresToday = choresDueToday
     .filter(
       (chore) =>
-        selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
+        selectedMembers.length === 0 ||
+        selectedMembers.includes(chore.assignedTo)
     )
     .sort((a, b) => dayjs(b.addedTime).diff(dayjs(a.addedTime)));
 
@@ -102,15 +105,20 @@ export default function CalendarView({
         Calendar View
       </Typography>
 
-      <FormControlLabel
-        control={
-          <Switch
-            checked={view === 'daily'}
-            onChange={() => setView(view === 'weekly' ? 'daily' : 'weekly')}
-          />
-        }
-        label="Daily View"
-      />
+      <ButtonGroup variant="outlined" sx={{ marginBottom: 3 }}>
+        <Button
+          onClick={() => setView('daily')}
+          variant={view === 'daily' ? 'contained' : 'outlined'}
+        >
+          Daily View
+        </Button>
+        <Button
+          onClick={() => setView('weekly')}
+          variant={view === 'weekly' ? 'contained' : 'outlined'}
+        >
+          Weekly View
+        </Button>
+      </ButtonGroup>
 
       {view === 'weekly' ? (
         <>
@@ -125,7 +133,9 @@ export default function CalendarView({
             <IconButton
               onClick={handlePrevWeek}
               disabled={!hasDataForPreviousWeek}
-              sx={{ color: hasDataForPreviousWeek ? 'primary.main' : 'grey.400' }}
+              sx={{
+                color: hasDataForPreviousWeek ? 'primary.main' : 'grey.400',
+              }}
             >
               <ArrowBackIosIcon />
             </IconButton>
@@ -187,14 +197,20 @@ export default function CalendarView({
                       return (
                         <TableCell
                           key={index}
-                          sx={{ color: isDue ? assignedUser?.color : 'inherit' }}
+                          sx={{
+                            color: isDue ? assignedUser?.color : 'inherit',
+                          }}
                         >
                           {isDue ? (
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>
                               {userName}
                               {isDone && (
                                 <CheckCircleIcon
-                                  sx={{ ml: 1, fontSize: '1rem', color: 'green' }}
+                                  sx={{
+                                    ml: 1,
+                                    fontSize: '1rem',
+                                    color: 'green',
+                                  }}
                                 />
                               )}
                             </Box>
@@ -240,11 +256,17 @@ export default function CalendarView({
                     const assignedUser = groupMembers.find(
                       (m) => m.uid === chore.assignedTo
                     );
-                    const userColor = assignedUser ? assignedUser.color : 'inherit';
-                    const isAssignedUser = assignedUser && assignedUser.uid === currentUser.uid;
+                    const userColor = assignedUser
+                      ? assignedUser.color
+                      : 'inherit';
+                    const isAssignedUser =
+                      assignedUser && assignedUser.uid === currentUser.uid;
 
                     return (
-                      <TableRow key={chore.id} sx={{ backgroundColor: userColor }}>
+                      <TableRow
+                        key={chore.id}
+                        sx={{ backgroundColor: userColor }}
+                      >
                         <TableCell>{chore.title}</TableCell>
                         <TableCell>
                           {assignedUser
