@@ -9,6 +9,7 @@
     "@mui/material": "^6.3.0",
     "cra-template": "1.2.0",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.4.7",
     "firebase": "^11.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
