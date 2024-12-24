@@ -185,7 +185,7 @@ export default function HomePage() {
   }
 
   // Add a new chore
-  async function handleAddChore({ title, frequency, startDate, assignedTo, addedTime }) {
+  async function handleAddChore({ title, frequency, startDate, assignedTo }) {
     if (!title.trim() || !joinedGroup) return;
     try {
       const choresRef = collection(db, 'groups', joinedGroup.id, 'chores');
@@ -258,7 +258,7 @@ export default function HomePage() {
             Chora
           </Typography>
           <Button color="inherit" onClick={handleSignOut}>
-            Sign Out
+            {userData.username}, Sign Out
           </Button>
         </Toolbar>
       </AppBar>

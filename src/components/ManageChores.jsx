@@ -47,7 +47,6 @@ export default function ManageChores({
       frequency: Number(choreFrequency),
       startDate: choreStartDate,
       assignedTo: assignedUid || currentUser.uid,
-      addedTime: new Date().toISOString(), // Add timestamp
     });
 
     // Reset form
