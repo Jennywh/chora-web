@@ -51,6 +51,22 @@ export default function WeeklySchedule({
     });
   });
 
+  const weeklyReport = groupMembers.reduce((report, member) => {
+    report[member.uid] = 0;
+    return report;
+  }, {});
+
+  filteredChores.forEach((chore) => {
+    daysOfWeek.forEach((dayObj) => {
+      const dateStr = formatDate(dayObj);
+      const docId = `${chore.id}_${dateStr}`;
+      const dailyRecord = dailyCompletions.find((d) => d.docId === docId);
+      if (dailyRecord?.completed) {
+        weeklyReport[chore.assignedTo] += 1;
+      }
+    });
+  });
+
   return (
     <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
       <Typography variant="h5" sx={{ marginBottom: 2 }}>
@@ -128,6 +144,16 @@ export default function WeeklySchedule({
           </TableBody>
         </Table>
       </TableContainer>
+      <Box sx={{ marginTop: 2 }}>
+        <Typography variant="h6">Weekly Report</Typography>
+        <ul>
+          {groupMembers.map((member) => (
+            <li key={member.uid}>
+              {member.username || member.email}: {weeklyReport[member.uid]}
+            </li>
+          ))}
+        </ul>
+      </Box>
     </Box>
   );
 }
