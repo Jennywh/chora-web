@@ -44,6 +44,7 @@ export default function HomePage() {
   // Group create/join states
   const [groupName, setGroupName] = useState('');
   const [groupIdInput, setGroupIdInput] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   // View toggles: "manage", "schedule", "daily"
   const [view, setView] = useState('manage');
@@ -129,7 +130,10 @@ export default function HomePage() {
   }
 
   async function handleCreateGroup() {
-    if (!groupName.trim()) return;
+    if (!groupName.trim()) {
+      setErrorMessage('Group name cannot be empty.');
+      return;
+    }
     try {
       const newGroupId = Date.now().toString();
       await setDoc(doc(db, 'groups', newGroupId), {
@@ -144,19 +148,23 @@ export default function HomePage() {
 
       setGroupName('');
       await loadGroupData(newGroupId);
+      setErrorMessage('');
     } catch (err) {
       console.error('Error creating group:', err);
+      setErrorMessage('Error creating group. Please try again.');
     }
   }
 
   async function handleJoinGroup() {
-    
-    if (!groupIdInput.trim()) return;
+    if (!groupIdInput.trim()) {
+      setErrorMessage('Group ID cannot be empty.');
+      return;
+    }
     try {
       const groupRef = doc(db, 'groups', groupIdInput);
       const groupSnap = await getDoc(groupRef);
       if (!groupSnap.exists()) {
-        alert('Group not found!');
+        setErrorMessage('Group not found.');
         return;
       }
       await setDoc(
@@ -167,8 +175,10 @@ export default function HomePage() {
 
       setGroupIdInput('');
       await loadGroupData(groupIdInput);
+      setErrorMessage('');
     } catch (err) {
       console.error('Error joining group:', err);
+      setErrorMessage('Error joining group. Please try again.');
     }
   }
 
@@ -273,6 +283,7 @@ export default function HomePage() {
             setGroupIdInput={setGroupIdInput}
             groupName={groupName}
             setGroupName={setGroupName}
+            errorMessage={errorMessage}
           />
         ) : (
           <>

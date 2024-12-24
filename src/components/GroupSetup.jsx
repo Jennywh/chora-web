@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Tabs,
-  Tab,
-  Typography,
-  TextField,
-  Button
-} from '@mui/material';
+import { Box, Tabs, Tab, Typography, TextField, Button } from '@mui/material';
 
 export default function GroupSetup({
   onJoinGroup,
@@ -14,7 +7,8 @@ export default function GroupSetup({
   groupIdInput,
   setGroupIdInput,
   groupName,
-  setGroupName
+  setGroupName,
+  errorMessage,
 }) {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -72,6 +66,12 @@ export default function GroupSetup({
             Create Group
           </Button>
         </Box>
+      )}
+
+      {errorMessage && (
+        <Typography color="error" sx={{ mt: 2 }}>
+          {errorMessage}
+        </Typography>
       )}
     </Box>
   );
