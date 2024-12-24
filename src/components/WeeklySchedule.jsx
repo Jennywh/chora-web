@@ -12,7 +12,7 @@ import {
   Box,
 } from '@mui/material';
 import { formatDate } from '../utils/dateUtils'; // Import the utility function
-import CheckIcon from '@mui/icons-material/Check'; // Import CheckIcon
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'; // Import CheckIcon
 
 function isChoreDue(chore, dateObj) {
   const start = dayjs(chore.startDate, 'YYYY-MM-DD');
@@ -82,10 +82,14 @@ export default function WeeklySchedule({
                       sx={{ color: isDue ? assignedUser?.color : 'inherit' }}
                     >
                       {isDue ? (
-                        <>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           {userName}
-                          {isDone && <CheckIcon sx={{ ml: 1 }} />}
-                        </>
+                          {isDone && (
+                            <CheckCircleIcon
+                              sx={{ ml: 1, fontSize: '1rem', color: 'green' }}
+                            />
+                          )}
+                        </Box>
                       ) : (
                         ''
                       )}
