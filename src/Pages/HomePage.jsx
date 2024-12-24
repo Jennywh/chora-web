@@ -25,6 +25,7 @@ import {
   Avatar,
   Tabs,
   Tab,
+  Modal,
 } from '@mui/material';
 import ManageChores from '../components/ManageChores';
 import WeeklySchedule from '../components/WeeklySchedule';
@@ -46,6 +47,7 @@ export default function HomePage() {
   const [groupIdInput, setGroupIdInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [view, setView] = useState('daily');
+  const [isManageChoresModalOpen, setIsManageChoresModalOpen] = useState(false); // State for modal
 
   const loadGroupData = useCallback(async (gId) => {
     try {
@@ -228,6 +230,14 @@ export default function HomePage() {
     signOut(auth);
   }
 
+  const handleOpenManageChoresModal = () => {
+    setIsManageChoresModalOpen(true);
+  };
+
+  const handleCloseManageChoresModal = () => {
+    setIsManageChoresModalOpen(false);
+  };
+
   if (!currentUser || userData === null) {
     return (
       <Typography variant="h6" sx={{ margin: 2 }}>
@@ -250,7 +260,6 @@ export default function HomePage() {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar alt="Chora Logo" src="/path/to/logo.png" sx={{ mr: 2 }} />
             <Typography variant="h5" sx={{ fontWeight: 600 }}>
               Chora
             </Typography>
@@ -265,11 +274,6 @@ export default function HomePage() {
             <Tab
               value="daily"
               label="Daily View"
-              sx={{ textTransform: 'none', fontWeight: 500 }}
-            />
-            <Tab
-              value="manage"
-              label="Manage Chores"
               sx={{ textTransform: 'none', fontWeight: 500 }}
             />
             <Tab
@@ -340,22 +344,17 @@ export default function HomePage() {
                 />
               ))}
             </Box>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleOpenManageChoresModal}
+              sx={{ marginTop: 2 }}
+            >
+              Manage Chores
+            </Button>
           </Box>
         )}
         {/* Conditionally Render Subviews */}
-        {view === 'manage' && (
-          <ManageChores
-            chores={chores}
-            groupMembers={groupMembers}
-            onEditChore={handleEditChore}
-            onDeleteChore={handleDeleteChore}
-            currentUser={currentUser}
-            currentUserName={userData.username || userData.email}
-            selectedMembers={selectedMembers}
-            joinedGroup={joinedGroup} // Pass joinedGroup to ManageChores
-            fetchChores={fetchChores} // Pass fetchChores to ManageChores
-          />
-        )}
         {view === 'schedule' && (
           <WeeklySchedule
             chores={chores}
@@ -382,6 +381,37 @@ export default function HomePage() {
           />
         )}
       </Container>
+
+      <Modal
+        open={isManageChoresModalOpen}
+        onClose={handleCloseManageChoresModal}
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <ManageChores
+            chores={chores}
+            groupMembers={groupMembers}
+            onEditChore={handleEditChore}
+            onDeleteChore={handleDeleteChore}
+            currentUser={currentUser}
+            currentUserName={userData.username || userData.email}
+            selectedMembers={selectedMembers}
+            joinedGroup={joinedGroup} // Pass joinedGroup to ManageChores
+            fetchChores={fetchChores} // Pass fetchChores to ManageChores
+          />
+        </Box>
+      </Modal>
     </>
   );
 }
