@@ -35,6 +35,7 @@ import Reports from '../components/Reports';
 import TodayIcon from '@mui/icons-material/Today';
 import CalendarViewWeekIcon from '@mui/icons-material/CalendarViewWeek';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import CalendarView from '../components/CalendarView';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -49,8 +50,9 @@ export default function HomePage() {
   const [groupName, setGroupName] = useState('');
   const [groupIdInput, setGroupIdInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [view, setView] = useState('daily');
+  const [view, setView] = useState('chores');
   const [isManageChoresModalOpen, setIsManageChoresModalOpen] = useState(false); // State for modal
+  const [isWeeklyView, setIsWeeklyView] = useState(false); // State to toggle views
 
   const loadGroupData = useCallback(async (gId) => {
     try {
@@ -275,15 +277,15 @@ export default function HomePage() {
             sx={{ flexGrow: 1, marginLeft: 4 }}
           >
             <Tab
-              value="daily"
-              label="Daily View"
+              value="chores"
+              label="Chores"
               icon={<TodayIcon />}
               iconPosition="start"
               sx={{ textTransform: 'none', fontWeight: 500 }}
             />
             <Tab
-              value="schedule"
-              label="Weekly Schedule"
+              value="calendar"
+              label="Calendar"
               icon={<CalendarViewWeekIcon />}
               iconPosition="start"
               sx={{ textTransform: 'none', fontWeight: 500 }}
@@ -361,24 +363,43 @@ export default function HomePage() {
             >
               Manage Chores
             </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => setIsWeeklyView(!isWeeklyView)}
+              sx={{ marginTop: 2, marginLeft: 2 }}
+            >
+              {isWeeklyView ? 'Daily View' : 'Weekly View'}
+            </Button>
           </Box>
         )}
         {/* Conditionally Render Subviews */}
-        {view === 'schedule' && (
-          <WeeklySchedule
+        {view === 'chores' && (
+          isWeeklyView ? (
+            <WeeklySchedule
+              chores={chores}
+              groupMembers={groupMembers}
+              selectedMembers={selectedMembers}
+              dailyCompletions={dailyCompletions}
+            />
+          ) : (
+            <DailyView
+              chores={chores}
+              groupMembers={groupMembers}
+              dailyCompletions={dailyCompletions}
+              onToggleDailyCompletion={handleToggleDailyCompletion}
+              selectedMembers={selectedMembers}
+              currentUser={currentUser}
+            />
+          )
+        )}
+        {view === 'calendar' && (
+          <CalendarView
             chores={chores}
             groupMembers={groupMembers}
             selectedMembers={selectedMembers}
-            dailyCompletions={dailyCompletions} // Pass dailyCompletions prop
-          />
-        )}
-        {view === 'daily' && (
-          <DailyView
-            chores={chores}
-            groupMembers={groupMembers}
             dailyCompletions={dailyCompletions}
             onToggleDailyCompletion={handleToggleDailyCompletion}
-            selectedMembers={selectedMembers}
             currentUser={currentUser}
           />
         )}
