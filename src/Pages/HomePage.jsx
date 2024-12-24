@@ -31,7 +31,10 @@ import ManageChores from '../components/ManageChores';
 import WeeklySchedule from '../components/WeeklySchedule';
 import DailyView from '../components/DailyView';
 import GroupSetup from '../components/GroupSetup';
-import Reports from '../components/Reports'; // Import WeeklyReport
+import Reports from '../components/Reports';
+import TodayIcon from '@mui/icons-material/Today';
+import CalendarViewWeekIcon from '@mui/icons-material/CalendarViewWeek';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -274,16 +277,22 @@ export default function HomePage() {
             <Tab
               value="daily"
               label="Daily View"
+              icon={<TodayIcon />}
+              iconPosition="start"
               sx={{ textTransform: 'none', fontWeight: 500 }}
             />
             <Tab
               value="schedule"
               label="Weekly Schedule"
+              icon={<CalendarViewWeekIcon />}
+              iconPosition="start"
               sx={{ textTransform: 'none', fontWeight: 500 }}
             />
             <Tab
               value="reports"
               label="Reports"
+              icon={<AssessmentIcon />}
+              iconPosition="start"
               sx={{ textTransform: 'none', fontWeight: 500 }}
             />
           </Tabs>
