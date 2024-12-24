@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import {
   Typography,
@@ -26,6 +26,7 @@ export default function WeeklySchedule({
   selectedMembers,
   dailyCompletions,
 }) {
+  const [weekOffset, setWeekOffset] = useState(0);
   const filteredChores = chores
     .filter(
       (chore) =>
@@ -34,17 +35,24 @@ export default function WeeklySchedule({
     )
     .sort((a, b) => dayjs(b.addedTime).diff(dayjs(a.addedTime)));
 
-  const startOfWeek = dayjs().startOf('week'); // Start of the current week (Sunday)
+  const startOfWeek = dayjs().startOf('week').add(weekOffset, 'week'); // Adjust start of week based on offset
   const daysOfWeek = [0, 1, 2, 3, 4, 5, 6].map((offset) =>
     startOfWeek.add(offset, 'day')
   );
+
+  const handlePrevWeek = () => setWeekOffset(weekOffset - 1);
+  const handleNextWeek = () => setWeekOffset(weekOffset + 1);
 
   return (
     <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
       <Typography variant="h5" sx={{ marginBottom: 2 }}>
         Weekly Schedule
       </Typography>
-      <TableContainer component={Paper}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
+        <button onClick={handlePrevWeek}>Previous Week</button>
+        <button onClick={handleNextWeek}>Next Week</button>
+      </Box>
+      <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
         <Table>
           <TableHead>
             <TableRow>
