@@ -43,13 +43,31 @@ export default function WeeklySchedule({
   const handlePrevWeek = () => setWeekOffset(weekOffset - 1);
   const handleNextWeek = () => setWeekOffset(weekOffset + 1);
 
+  const hasDataForPreviousWeek = filteredChores.some((chore) => {
+    const previousWeekStart = startOfWeek.subtract(1, 'week');
+    return [0, 1, 2, 3, 4, 5, 6].some((offset) => {
+      const dayObj = previousWeekStart.add(offset, 'day');
+      return isChoreDue(chore, dayObj);
+    });
+  });
+
   return (
     <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
       <Typography variant="h5" sx={{ marginBottom: 2 }}>
         Weekly Schedule
       </Typography>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-        <button onClick={handlePrevWeek}>Previous Week</button>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: 2,
+        }}
+      >
+        {hasDataForPreviousWeek ? (
+          <button onClick={handlePrevWeek}>Previous Week</button>
+        ) : (
+          <span></span>
+        )}
         <button onClick={handleNextWeek}>Next Week</button>
       </Box>
       <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
