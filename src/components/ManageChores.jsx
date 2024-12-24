@@ -9,17 +9,17 @@ import {
   TableCell,
   TableContainer,
   Paper,
-  Button,
   TextField,
   MenuItem,
   Select,
   FormControl,
-  InputLabel,
   Box,
   IconButton,
+  Button,
 } from '@mui/material';
 import { Edit, Delete, Save, Cancel } from '@mui/icons-material';
-import { formatDate } from '../utils/dateUtils'; // Import the utility function
+import { formatDate } from '../utils/dateUtils';
+import { ChoreForm } from '../components/ChoreForm';
 
 export default function ManageChores({
   chores,
@@ -28,33 +28,28 @@ export default function ManageChores({
   onEditChore,
   onDeleteChore,
   currentUser,
-  currentUserName,
   selectedMembers,
+  joinedGroup,
+  fetchChores,
 }) {
-  const [choreTitle, setChoreTitle] = useState('');
-  const [choreFrequency, setChoreFrequency] = useState(1);
-  const [choreStartDate, setChoreStartDate] = useState(
-    dayjs().format('YYYY-MM-DD')
-  );
-  const [assignedUid, setAssignedUid] = useState('');
   const [editingChoreId, setEditingChoreId] = useState(null);
   const [editedChore, setEditedChore] = useState({});
+  const [showAddForm, setShowAddForm] = useState(false);
 
-  const handleAddChoreClick = () => {
-    if (!choreTitle.trim()) return;
+  const handleAddButtonClick = () => {
+    setShowAddForm(true);
+  };
 
+  const handleFormClose = () => {
+    setShowAddForm(false);
+  };
+
+  const handleAddChoreClick = (newChore) => {
     onAddChore({
-      title: choreTitle,
-      frequency: Number(choreFrequency),
-      startDate: choreStartDate,
-      assignedTo: assignedUid || currentUser.uid,
+      ...newChore,
+      assignedTo: newChore.assignedTo || currentUser.uid,
+      addedTime: new Date().toISOString(),
     });
-
-    // Reset form
-    setChoreTitle('');
-    setChoreFrequency(1);
-    setChoreStartDate(dayjs().format('YYYY-MM-DD'));
-    setAssignedUid('');
   };
 
   const handleEditClick = (chore) => {
@@ -83,87 +78,71 @@ export default function ManageChores({
         selectedMembers.length === 0 ||
         selectedMembers.includes(chore.assignedTo)
     )
-    .sort((a, b) => new Date(b.addedTime) - new Date(a.addedTime)); // Sort by addedTime in descending order
+    .sort((a, b) => new Date(b.addedTime) - new Date(a.addedTime));
 
   return (
-    <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
-      <Typography variant="h5" sx={{ marginBottom: 2 }}>
+    <Box
+      sx={{
+        padding: 3,
+        backgroundColor: '#ffffff',
+        borderRadius: '8px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <Typography
+        variant="h5"
+        sx={{
+          fontWeight: 600,
+          marginBottom: 3,
+          borderBottom: '2px solid #ddd',
+          paddingBottom: 1,
+        }}
+      >
         Manage Chores
       </Typography>
 
-      {/* Add Chore Row */}
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 2,
-          flexWrap: 'wrap',
-          marginBottom: 2,
-        }}
-      >
-        <TextField
-          label="New Chore"
-          value={choreTitle}
-          onChange={(e) => setChoreTitle(e.target.value)}
-          size="small"
-        />
-
-        <FormControl size="small" sx={{ minWidth: 180 }}>
-          <InputLabel>Assign To</InputLabel>
-          <Select
-            label="Assign To"
-            value={assignedUid || currentUser.uid}
-            onChange={(e) => setAssignedUid(e.target.value)}
-          >
-            <MenuItem value={currentUser.uid}>
-              {currentUserName || currentUser.email} (myself)
-            </MenuItem>
-            {groupMembers
-              .filter((m) => m.uid !== currentUser.uid)
-              .map((m) => (
-                <MenuItem key={m.uid} value={m.uid}>
-                  {m.username || m.email}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
-
-        <TextField
-          label="Repeats Every (Days)"
-          type="number"
-          value={choreFrequency}
-          onChange={(e) => setChoreFrequency(e.target.value)}
-          size="small"
-          sx={{ width: 180 }}
-        />
-
-        <TextField
-          label="Start Date"
-          type="date"
-          value={choreStartDate}
-          onChange={(e) => setChoreStartDate(e.target.value)}
-          InputLabelProps={{ shrink: true }}
-          size="small"
-          sx={{ width: 150 }}
-        />
-
-        <Button
-          variant="contained"
-          color="success"
-          onClick={handleAddChoreClick}
-        >
-          Add
-        </Button>
+      <Box sx={{ marginBottom: 3 }}>
+        {showAddForm ? (
+          <ChoreForm
+            onSubmit={(newChore) => {
+              handleAddChoreClick(newChore);
+              handleFormClose();
+            }}
+            onCancel={handleFormClose} // Add onCancel prop
+            groupMembers={groupMembers}
+            currentUserUid={currentUser.uid}
+            joinedGroup={joinedGroup}
+            fetchChores={fetchChores}
+          />
+        ) : (
+          <Button variant="contained" color="primary" onClick={handleAddButtonClick}>
+            Add Chore
+          </Button>
+        )}
       </Box>
 
-      <TableContainer component={Paper} sx={{ marginBottom: 2 }}>
+      <TableContainer
+        component={Paper}
+        sx={{
+          border: '1px solid #ddd',
+          borderRadius: '8px',
+          overflow: 'hidden',
+        }}
+      >
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell>Title</TableCell>
-              <TableCell>Assigned</TableCell>
-              <TableCell>Repeats Every (Days)</TableCell>
-              <TableCell>Start Date</TableCell>
-              <TableCell>Actions</TableCell>
+            <TableRow
+              sx={{
+                backgroundColor: '#f4f6f8',
+              }}
+            >
+              <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Assigned</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>
+                Repeats Every (Days)
+              </TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Start Date</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -179,8 +158,7 @@ export default function ManageChores({
                 <TableRow
                   key={chore.id}
                   sx={{
-                    height: isEditing ? '80px' : 'auto',
-                    backgroundColor: userColor,
+                    backgroundColor: isEditing ? '#f9f9f9' : 'transparent',
                   }}
                 >
                   <TableCell>
@@ -189,14 +167,15 @@ export default function ManageChores({
                         value={editedChore.title}
                         onChange={(e) => handleChange('title', e.target.value)}
                         size="small"
+                        fullWidth
                       />
                     ) : (
-                      chore.title
+                      <Typography>{chore.title}</Typography>
                     )}
                   </TableCell>
                   <TableCell>
                     {isEditing ? (
-                      <FormControl size="small">
+                      <FormControl size="small" fullWidth>
                         <Select
                           value={editedChore.assignedTo || currentUser.uid}
                           onChange={(e) =>
@@ -215,10 +194,12 @@ export default function ManageChores({
                             ))}
                         </Select>
                       </FormControl>
-                    ) : assignedUser ? (
-                      assignedUser.username || assignedUser.email
                     ) : (
-                      'Unknown'
+                      <Typography>
+                        {assignedUser
+                          ? assignedUser.username || assignedUser.email
+                          : 'Unknown'}
+                      </Typography>
                     )}
                   </TableCell>
                   <TableCell>
@@ -230,9 +211,10 @@ export default function ManageChores({
                           handleChange('frequency', Math.max(1, e.target.value))
                         }
                         size="small"
+                        fullWidth
                       />
                     ) : (
-                      chore.frequency
+                      <Typography>{chore.frequency}</Typography>
                     )}
                   </TableCell>
                   <TableCell>
@@ -244,14 +226,17 @@ export default function ManageChores({
                           handleChange('startDate', e.target.value)
                         }
                         size="small"
+                        fullWidth
                       />
                     ) : (
-                      formatDate(dayjs(chore.startDate, 'YYYY-MM-DD'))
+                      <Typography>
+                        {formatDate(dayjs(chore.startDate, 'YYYY-MM-DD'))}
+                      </Typography>
                     )}
                   </TableCell>
                   <TableCell>
                     {isEditing ? (
-                      <>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
                         <IconButton color="primary" onClick={handleSaveClick}>
                           <Save />
                         </IconButton>
@@ -261,9 +246,9 @@ export default function ManageChores({
                         >
                           <Cancel />
                         </IconButton>
-                      </>
+                      </Box>
                     ) : (
-                      <>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
                         <IconButton
                           color="primary"
                           onClick={() => handleEditClick(chore)}
@@ -276,7 +261,7 @@ export default function ManageChores({
                         >
                           <Delete />
                         </IconButton>
-                      </>
+                      </Box>
                     )}
                   </TableCell>
                 </TableRow>
@@ -285,6 +270,16 @@ export default function ManageChores({
           </TableBody>
         </Table>
       </TableContainer>
+
+      {filteredChores.length === 0 && (
+        <Typography
+          variant="body1"
+          color="textSecondary"
+          sx={{ textAlign: 'center', marginTop: 2 }}
+        >
+          No chores to display.
+        </Typography>
+      )}
     </Box>
   );
 }

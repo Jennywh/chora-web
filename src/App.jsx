@@ -6,12 +6,14 @@ import HomePage from './Pages/HomePage';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/home" element={<HomePage />} />
-      </Routes>
-    </Router>
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/home" element={<HomePage />} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 

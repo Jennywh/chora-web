@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import {
   doc,
@@ -14,7 +14,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 
-// MUI Imports
 import {
   AppBar,
   Toolbar,
@@ -23,15 +22,16 @@ import {
   Container,
   Box,
   Chip,
-  IconButton,
   Avatar,
+  Tabs,
+  Tab,
+  Modal,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-
 import ManageChores from '../components/ManageChores';
 import WeeklySchedule from '../components/WeeklySchedule';
 import DailyView from '../components/DailyView';
 import GroupSetup from '../components/GroupSetup';
+import Reports from '../components/Reports'; // Import WeeklyReport
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -43,38 +43,13 @@ export default function HomePage() {
   const [chores, setChores] = useState([]);
   const [dailyCompletions, setDailyCompletions] = useState([]);
   const [selectedMembers, setSelectedMembers] = useState([]);
-
-  // Group create/join states
   const [groupName, setGroupName] = useState('');
   const [groupIdInput, setGroupIdInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [view, setView] = useState('daily');
+  const [isManageChoresOpen, setIsManageChoresOpen] = useState(false); // Add state for modal
 
-  // View toggles: "manage", "schedule", "daily"
-  const [view, setView] = useState('manage');
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        navigate('/');
-      } else {
-        setCurrentUser(user);
-        // Load user doc
-        const userRef = doc(db, 'users', user.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          const data = userSnap.data();
-          setUserData(data);
-          if (data.groupId) {
-            await loadGroupData(data.groupId);
-            setSelectedMembers([]); // Select all members by default
-          }
-        }
-      }
-    });
-    return () => unsubscribe();
-  }, [navigate]);
-
-  async function loadGroupData(gId) {
+  const loadGroupData = useCallback(async (gId) => {
     try {
       const groupRef = doc(db, 'groups', gId);
       const groupSnap = await getDoc(groupRef);
@@ -87,7 +62,28 @@ export default function HomePage() {
     } catch (err) {
       console.error('Error loading group:', err);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        navigate('/');
+      } else {
+        setCurrentUser(user);
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          setUserData(data);
+          if (data.groupId) {
+            await loadGroupData(data.groupId);
+            setSelectedMembers([]);
+          }
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate, loadGroupData]);
 
   async function fetchGroupMembers(gId) {
     try {
@@ -198,24 +194,6 @@ export default function HomePage() {
     await fetchChores(joinedGroup.id);
   }
 
-  // Add a new chore
-  async function handleAddChore({ title, frequency, startDate, assignedTo }) {
-    if (!title.trim() || !joinedGroup) return;
-    try {
-      const choresRef = collection(db, 'groups', joinedGroup.id, 'chores');
-      await addDoc(choresRef, {
-        title,
-        frequency,
-        startDate,
-        assignedTo: assignedTo || currentUser.uid,
-        addedTime: new Date().toISOString(),
-      });
-      await fetchChores(joinedGroup.id);
-    } catch (err) {
-      console.error('Error adding chore:', err);
-    }
-  }
-
   // Toggle daily completion
   async function handleToggleDailyCompletion(choreId, date, checked) {
     if (!joinedGroup) return;
@@ -262,20 +240,57 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Top AppBar for navigation and sign-out */}
-      <AppBar position="static">
-        <Toolbar>
-          <Avatar alt="Chora Logo" src="/path/to/logo.png" sx={{ mr: 2 }} />
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Chora
-          </Typography>
-          <Button color="inherit" onClick={handleSignOut}>
+      <AppBar
+        position="static"
+        sx={{ backgroundColor: '#ffffff', color: '#333', boxShadow: 'none' }}
+      >
+        <Toolbar
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: '0 24px',
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Avatar alt="Chora Logo" src="/path/to/logo.png" sx={{ mr: 2 }} />
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              Chora
+            </Typography>
+          </Box>
+          <Tabs
+            value={view}
+            onChange={(e, newValue) => setView(newValue)}
+            textColor="inherit"
+            indicatorColor="primary"
+            sx={{ flexGrow: 1, marginLeft: 4 }}
+          >
+            <Tab
+              value="daily"
+              label="Daily View"
+              sx={{ textTransform: 'none', fontWeight: 500 }}
+            />
+            <Tab
+              value="schedule"
+              label="Weekly Schedule"
+              sx={{ textTransform: 'none', fontWeight: 500 }}
+            />
+            <Tab
+              value="reports"
+              label="Reports"
+              sx={{ textTransform: 'none', fontWeight: 500 }}
+            />
+          </Tabs>
+          <Button
+            color="primary"
+            onClick={handleSignOut}
+            sx={{ textTransform: 'none', fontWeight: 600 }}
+          >
             Sign Out
           </Button>
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ marginY: 3 }}>
+      <Container maxWidth="lg" sx={{ marginTop: 4 }}>
         {!joinedGroup ? (
           <GroupSetup
             onJoinGroup={handleJoinGroup}
@@ -287,116 +302,111 @@ export default function HomePage() {
             errorMessage={errorMessage}
           />
         ) : (
-          <>
-            {/* Group Info */}
-            <Box
-              sx={{
-                marginBottom: 2,
-                padding: 2,
-                backgroundColor: '#E1F1D8',
-                borderRadius: 1,
-              }}
+          <Box
+            sx={{
+              backgroundColor: '#f9f9f9',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+              padding: 3,
+              marginBottom: 3,
+            }}
+          >
+            <Typography variant="h5" sx={{ fontWeight: 600, marginBottom: 2 }}>
+              {joinedGroup.name}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              sx={{ marginBottom: 3 }}
             >
-              <Typography variant="h5" component="span">
-                {joinedGroup.name}
-              </Typography>
-              <Typography
-                variant="body1"
-                component="span"
-                sx={{ marginLeft: 1 }}
-              >
-                (#{joinedGroup.id})
-              </Typography>
-
-              <Box
-                sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, marginY: 2 }}
-              >
-                {groupMembers.map((member) => (
-                  <Chip
-                    key={member.uid}
-                    label={
-                      member.uid === currentUser.uid
-                        ? `${member.username || member.email} (myself)`
-                        : member.username || member.email
-                    }
-                    onClick={() => handleMemberFilterChange(member.uid)}
-                    color={
-                      selectedMembers.includes(member.uid)
-                        ? 'primary'
-                        : 'default'
-                    }
-                    sx={{
-                      backgroundColor: selectedMembers.includes(member.uid)
-                        ? 'primary'
-                        : 'default',
-                    }}
-                  />
-                ))}
-              </Box>
+              Group ID: #{joinedGroup.id}
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {groupMembers.map((member) => (
+                <Chip
+                  key={member.uid}
+                  label={
+                    member.uid === currentUser.uid
+                      ? `${member.username || member.email} (myself)`
+                      : member.username || member.email
+                  }
+                  onClick={() => handleMemberFilterChange(member.uid)}
+                  color={
+                    selectedMembers.includes(member.uid) ? 'primary' : 'default'
+                  }
+                />
+              ))}
             </Box>
-            {/* Member Filter */}
-
-            {/* View Toggles */}
-            <Box sx={{ marginY: 2 }}>
-              <Button
-                variant={view === 'manage' ? 'contained' : 'outlined'}
-                onClick={() => setView('manage')}
-                sx={{ marginRight: 1 }}
-                size="small"
-              >
-                Manage Chores
-              </Button>
-              <Button
-                variant={view === 'daily' ? 'contained' : 'outlined'}
-                onClick={() => setView('daily')}
-                sx={{ marginRight: 1 }}
-                size="small"
-              >
-                Daily View
-              </Button>
-              <Button
-                variant={view === 'schedule' ? 'contained' : 'outlined'}
-                onClick={() => setView('schedule')}
-                size="small"
-              >
-                Weekly Schedule
-              </Button>
-            </Box>
-
-            {/* Conditionally Render Subviews */}
-            {view === 'manage' && (
-              <ManageChores
-                chores={chores}
-                groupMembers={groupMembers}
-                onAddChore={handleAddChore}
-                onEditChore={handleEditChore}
-                onDeleteChore={handleDeleteChore}
-                currentUser={currentUser}
-                currentUserName={userData.username || userData.email}
-                selectedMembers={selectedMembers}
-              />
-            )}
-            {view === 'schedule' && (
-              <WeeklySchedule
-                chores={chores}
-                groupMembers={groupMembers}
-                selectedMembers={selectedMembers}
-                dailyCompletions={dailyCompletions} // Pass dailyCompletions prop
-              />
-            )}
-            {view === 'daily' && (
-              <DailyView
-                chores={chores}
-                groupMembers={groupMembers}
-                dailyCompletions={dailyCompletions}
-                onToggleDailyCompletion={handleToggleDailyCompletion}
-                selectedMembers={selectedMembers}
-                currentUser={currentUser}
-              />
-            )}
-          </>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setIsManageChoresOpen(true)}
+              sx={{ marginTop: 2 }}
+            >
+              Manage Chores
+            </Button>
+          </Box>
+        )}
+        {/* Conditionally Render Subviews */}
+        {view === 'schedule' && (
+          <WeeklySchedule
+            chores={chores}
+            groupMembers={groupMembers}
+            selectedMembers={selectedMembers}
+            dailyCompletions={dailyCompletions} // Pass dailyCompletions prop
+          />
+        )}
+        {view === 'daily' && (
+          <DailyView
+            chores={chores}
+            groupMembers={groupMembers}
+            dailyCompletions={dailyCompletions}
+            onToggleDailyCompletion={handleToggleDailyCompletion}
+            selectedMembers={selectedMembers}
+            currentUser={currentUser}
+          />
+        )}
+        {view === 'reports' && (
+          <Reports
+            chores={chores}
+            dailyCompletions={dailyCompletions}
+            groupMembers={groupMembers}
+          />
         )}
       </Container>
+
+      <Modal
+        open={isManageChoresOpen}
+        onClose={() => setIsManageChoresOpen(false)}
+        aria-labelledby="manage-chores-modal"
+        aria-describedby="manage-chores-modal-description"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 600,
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+          }}
+        >
+          <ManageChores
+            chores={chores}
+            groupMembers={groupMembers}
+            onEditChore={handleEditChore}
+            onDeleteChore={handleDeleteChore}
+            currentUser={currentUser}
+            currentUserName={userData.username || userData.email}
+            selectedMembers={selectedMembers}
+            joinedGroup={joinedGroup}
+            fetchChores={fetchChores}
+          />
+        </Box>
+      </Modal>
     </>
   );
 }

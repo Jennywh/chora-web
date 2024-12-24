@@ -10,9 +10,13 @@ import {
   TableContainer,
   Paper,
   Box,
+  Button,
+  IconButton,
 } from '@mui/material';
-import { formatDate } from '../utils/dateUtils'; // Import the utility function
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'; // Import CheckIcon
+import { formatDate } from '../utils/dateUtils';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 function isChoreDue(chore, dateObj) {
   const start = dayjs(chore.startDate, 'YYYY-MM-DD');
@@ -35,7 +39,7 @@ export default function WeeklySchedule({
     )
     .sort((a, b) => dayjs(b.addedTime).diff(dayjs(a.addedTime)));
 
-  const startOfWeek = dayjs().startOf('week').add(weekOffset, 'week'); // Adjust start of week based on offset
+  const startOfWeek = dayjs().startOf('week').add(weekOffset, 'week');
   const daysOfWeek = [0, 1, 2, 3, 4, 5, 6].map((offset) =>
     startOfWeek.add(offset, 'day')
   );
@@ -51,51 +55,74 @@ export default function WeeklySchedule({
     });
   });
 
-  const weeklyReport = groupMembers.reduce((report, member) => {
-    report[member.uid] = 0;
-    return report;
-  }, {});
-
-  filteredChores.forEach((chore) => {
-    daysOfWeek.forEach((dayObj) => {
-      const dateStr = formatDate(dayObj);
-      const docId = `${chore.id}_${dateStr}`;
-      const dailyRecord = dailyCompletions.find((d) => d.docId === docId);
-      if (dailyRecord?.completed) {
-        weeklyReport[chore.assignedTo] += 1;
-      }
-    });
-  });
-
   return (
-    <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
-      <Typography variant="h5" sx={{ marginBottom: 2 }}>
+    <Box
+      sx={{
+        padding: 3,
+        backgroundColor: '#ffffff',
+        borderRadius: '8px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <Typography
+        variant="h5"
+        sx={{
+          fontWeight: 600,
+          marginBottom: 3,
+          borderBottom: '2px solid #ddd',
+          paddingBottom: 1,
+        }}
+      >
         Weekly Schedule
       </Typography>
+
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
-          marginBottom: 2,
+          alignItems: 'center',
+          marginBottom: 3,
         }}
       >
-        {hasDataForPreviousWeek ? (
-          <button onClick={handlePrevWeek}>Previous Week</button>
-        ) : (
-          <span></span>
-        )}
-        <button onClick={handleNextWeek}>Next Week</button>
+        <IconButton
+          onClick={handlePrevWeek}
+          disabled={!hasDataForPreviousWeek}
+          sx={{ color: hasDataForPreviousWeek ? 'primary.main' : 'grey.400' }}
+        >
+          <ArrowBackIosIcon />
+        </IconButton>
+
+        <Typography variant="h6">
+          {startOfWeek.format('MMMM D')} -{' '}
+          {startOfWeek.add(6, 'day').format('MMMM D, YYYY')}
+        </Typography>
+
+        <IconButton onClick={handleNextWeek} sx={{ color: 'primary.main' }}>
+          <ArrowForwardIosIcon />
+        </IconButton>
       </Box>
-      <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+
+      <TableContainer
+        component={Paper}
+        sx={{
+          border: '1px solid #ddd',
+          borderRadius: '8px',
+          overflow: 'hidden',
+        }}
+      >
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell>Chore</TableCell>
+            <TableRow
+              sx={{
+                backgroundColor: '#f4f6f8',
+              }}
+            >
+              <TableCell sx={{ fontWeight: 600 }}>Chore</TableCell>
               {daysOfWeek.map((dayObj, index) => (
-                <TableCell key={index}>
+                <TableCell key={index} sx={{ fontWeight: 600 }}>
                   {dayObj.format('ddd')}
                   <br />
-                  {formatDate(dayObj)} {/* Use the utility function */}
+                  {formatDate(dayObj)}
                 </TableCell>
               ))}
             </TableRow>
@@ -144,16 +171,6 @@ export default function WeeklySchedule({
           </TableBody>
         </Table>
       </TableContainer>
-      <Box sx={{ marginTop: 2 }}>
-        <Typography variant="h6">Weekly Report</Typography>
-        <ul>
-          {groupMembers.map((member) => (
-            <li key={member.uid}>
-              {member.username || member.email}: {weeklyReport[member.uid]}
-            </li>
-          ))}
-        </ul>
-      </Box>
     </Box>
   );
 }
