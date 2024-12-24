@@ -12,6 +12,7 @@ import {
   Paper,
   Box,
 } from '@mui/material';
+import { formatDate } from '../utils/dateUtils'; // Import the utility function
 
 function isChoreDue(chore, dateObj) {
   const start = dayjs(chore.startDate, 'YYYY-MM-DD');
@@ -50,7 +51,7 @@ export default function WeeklySchedule({
                 <TableCell key={index}>
                   {index === 0 ? 'Today' : dayObj.format('ddd')}
                   <br />
-                  {dayObj.format('MMM D')}
+                  {formatDate(dayObj)} {/* Use the utility function */}
                 </TableCell>
               ))}
             </TableRow>

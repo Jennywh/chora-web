@@ -12,6 +12,7 @@ import {
   Checkbox,
   Box,
 } from '@mui/material';
+import { formatDate } from '../utils/dateUtils'; // Import the utility function
 
 function isChoreDue(chore, dateObj) {
   const start = dayjs(chore.startDate, 'YYYY-MM-DD');
@@ -28,7 +29,7 @@ export default function DailyView({
   currentUser, // Add currentUser prop
 }) {
   const today = dayjs();
-  const todayString = today.format('YYYY-MM-DD');
+  const todayString = formatDate(today); // Use the utility function
 
   const choresDueToday = chores.filter((c) => isChoreDue(c, today));
   const filteredChores = choresDueToday
