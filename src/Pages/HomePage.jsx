@@ -381,6 +381,7 @@ export default function HomePage() {
                 chores={chores}
                 groupMembers={groupMembers}
                 selectedMembers={selectedMembers}
+                dailyCompletions={dailyCompletions} // Pass dailyCompletions prop
               />
             )}
             {view === 'daily' && (

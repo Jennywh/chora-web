@@ -1,4 +1,3 @@
-// src/components/WeeklySchedule.js
 import React from 'react';
 import dayjs from 'dayjs';
 import {
@@ -13,6 +12,7 @@ import {
   Box,
 } from '@mui/material';
 import { formatDate } from '../utils/dateUtils'; // Import the utility function
+import CheckIcon from '@mui/icons-material/Check'; // Import CheckIcon
 
 function isChoreDue(chore, dateObj) {
   const start = dayjs(chore.startDate, 'YYYY-MM-DD');
@@ -24,6 +24,7 @@ export default function WeeklySchedule({
   chores,
   groupMembers,
   selectedMembers,
+  dailyCompletions, // Add dailyCompletions prop
 }) {
   const filteredChores = chores
     .filter(
@@ -68,12 +69,26 @@ export default function WeeklySchedule({
                   const userName = assignedUser
                     ? assignedUser.username || assignedUser.email
                     : 'Unknown';
+                  const dateStr = formatDate(dayObj);
+                  const docId = `${chore.id}_${dateStr}`;
+                  const dailyRecord = dailyCompletions.find(
+                    (d) => d.docId === docId
+                  );
+                  const isDone = dailyRecord?.completed || false;
+
                   return (
                     <TableCell
                       key={index}
                       sx={{ color: isDue ? assignedUser?.color : 'inherit' }}
                     >
-                      {isDue ? userName : ''}
+                      {isDue ? (
+                        <>
+                          {userName}
+                          {isDone && <CheckIcon sx={{ ml: 1 }} />}
+                        </>
+                      ) : (
+                        ''
+                      )}
                     </TableCell>
                   );
                 })}
