@@ -22,8 +22,17 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 function isChoreDue(chore, dateObj) {
   const start = dayjs(chore.startDate, 'YYYY-MM-DD');
-  const diff = dateObj.diff(start, 'day');
-  return diff >= 0 && diff % chore.frequency === 0;
+  const repeatFrequency = chore.repeatFrequency;
+
+  if (repeatFrequency.type === 'none') {
+    return dateObj.isSame(start, 'day');
+  } else if (repeatFrequency.type === 'daily') {
+    const diff = dateObj.diff(start, 'day');
+    return diff >= 0 && diff % repeatFrequency.days === 0;
+  } else if (repeatFrequency.type === 'weekly') {
+    return repeatFrequency.weekdays.includes(dateObj.day());
+  }
+  return false;
 }
 
 export default function CalendarView({

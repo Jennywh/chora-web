@@ -26,7 +26,7 @@ const WEEKDAYS = [
 const getInitialFormState = () => ({
   title: '',
   assignedTo: '',
-  dueDate: new Date(),
+  startDate: new Date(),
   repeatType: 'none',
   repeatDays: 1,
   selectedWeekdays: [],
@@ -44,7 +44,7 @@ export function ChoreForm({
   const handleAddChore = async ({
     title,
     assignedTo,
-    dueDate,
+    startDate,
     repeatFrequency,
   }) => {
     if (!title.trim() || !joinedGroup) return;
@@ -53,7 +53,7 @@ export function ChoreForm({
       await addDoc(choresRef, {
         title,
         assignedTo: assignedTo || currentUserUid,
-        dueDate,
+        startDate,
         repeatFrequency,
         addedTime: new Date().toISOString(),
       });
@@ -73,7 +73,7 @@ export function ChoreForm({
   const handleDateChange = (e) => {
     setFormState((prev) => ({
       ...prev,
-      dueDate: new Date(e.target.value),
+      startDate: new Date(e.target.value),
     }));
   };
 
@@ -91,12 +91,12 @@ export function ChoreForm({
     const {
       title,
       assignedTo,
-      dueDate,
+      startDate,
       repeatType,
       repeatDays,
       selectedWeekdays,
     } = formState;
-    if (!title || !assignedTo || !dueDate) return;
+    if (!title || !assignedTo || !startDate) return;
 
     const repeatFrequency = {
       type: repeatType,
@@ -107,7 +107,7 @@ export function ChoreForm({
     handleAddChore({
       title,
       assignedTo,
-      dueDate: dueDate.toISOString().split('T')[0],
+      startDate: startDate.toISOString().split('T')[0],
       repeatFrequency,
     });
 
@@ -117,7 +117,7 @@ export function ChoreForm({
   const {
     title,
     assignedTo,
-    dueDate,
+    startDate,
     repeatType,
     repeatDays,
     selectedWeekdays,
@@ -176,9 +176,9 @@ export function ChoreForm({
       </FormControl>
 
       <TextField
-        label="Due Date"
+        label="Start Date"
         type="date"
-        value={dueDate.toISOString().split('T')[0]}
+        value={startDate.toISOString().split('T')[0]}
         onChange={handleDateChange}
         InputLabelProps={{ shrink: true }}
         inputProps={{ min: new Date().toISOString().split('T')[0] }}
