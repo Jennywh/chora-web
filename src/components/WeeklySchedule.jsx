@@ -19,12 +19,22 @@ function isChoreDue(chore, dateObj) {
   return diff >= 0 && diff % chore.frequency === 0;
 }
 
-export default function WeeklySchedule({ chores, groupMembers, selectedMembers }) {
+export default function WeeklySchedule({
+  chores,
+  groupMembers,
+  selectedMembers,
+}) {
   const filteredChores = chores
-    .filter((chore) =>
-      selectedMembers.length === 0 || selectedMembers.includes(chore.assignedTo)
+    .filter(
+      (chore) =>
+        selectedMembers.length === 0 ||
+        selectedMembers.includes(chore.assignedTo)
     )
     .sort((a, b) => dayjs(b.addedTime).diff(dayjs(a.addedTime)));
+
+  const daysOfWeek = [0, 1, 2, 3, 4, 5, 6].map((offset) =>
+    dayjs().add(offset, 'day')
+  );
 
   return (
     <Box sx={{ padding: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
@@ -35,49 +45,39 @@ export default function WeeklySchedule({ chores, groupMembers, selectedMembers }
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Day</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Chores</TableCell>
+              <TableCell>Chore</TableCell>
+              {daysOfWeek.map((dayObj, index) => (
+                <TableCell key={index}>
+                  {index === 0 ? 'Today' : dayObj.format('ddd')}
+                  <br />
+                  {dayObj.format('YYYY-MM-DD')}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {[0, 1, 2, 3, 4, 5, 6].map((offset) => {
-              const dayObj = dayjs().add(offset, 'day');
-              const dayString = dayObj.format('YYYY-MM-DD');
-              const choresForDay = filteredChores.filter((c) => isChoreDue(c, dayObj));
-
-              return (
-                <TableRow key={offset}>
-                  <TableCell>
-                    {offset === 0 ? 'Today' : dayObj.format('ddd')}
-                  </TableCell>
-                  <TableCell>{dayString}</TableCell>
-                  <TableCell>
-                    {choresForDay.length === 0 ? (
-                      <em>No chores due</em>
-                    ) : (
-                      <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-                        {choresForDay.map((c) => {
-                          const assignedUser = groupMembers.find(
-                            (m) => m.uid === c.assignedTo
-                          );
-                          const userColor = assignedUser ? assignedUser.color : 'inherit';
-                          return (
-                            <li key={c.id} style={{ color: userColor }}>
-                              {c.title} {'('}
-                              {assignedUser
-                                ? assignedUser.username || assignedUser.email
-                                : 'Unknown'}
-                              {')'}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {filteredChores.map((chore) => (
+              <TableRow key={chore.id}>
+                <TableCell>{chore.title}</TableCell>
+                {daysOfWeek.map((dayObj, index) => {
+                  const isDue = isChoreDue(chore, dayObj);
+                  const assignedUser = groupMembers.find(
+                    (m) => m.uid === chore.assignedTo
+                  );
+                  const userName = assignedUser
+                    ? assignedUser.username || assignedUser.email
+                    : 'Unknown';
+                  return (
+                    <TableCell
+                      key={index}
+                      sx={{ color: isDue ? assignedUser?.color : 'inherit' }}
+                    >
+                      {isDue ? userName : ''}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
